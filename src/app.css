@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/* Custom theme configuration */
+@theme {
+  --color-acrolinx-50: #f0f9ff;
+  --color-acrolinx-100: #e0f2fe;
+  --color-acrolinx-500: #3b82f6;
+  --color-acrolinx-600: #2563eb;
+  --color-acrolinx-700: #1d4ed8;
+}
+
+/* Custom scrollbar styles */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af #f3f4f6;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
