@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { PUBLIC_ACROLINX_API_TOKEN } from '$env/static/public';
+import { ACROLINX_API_TOKEN } from '$env/static/private';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const authHeader = request.headers.get('Authorization');
@@ -30,7 +30,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		// In a real app, you'd decrypt and verify the token
 		// For now, just check if it's either our API token or a valid JWT-like token
 		if (
-			tokenToVerify === PUBLIC_ACROLINX_API_TOKEN ||
+			tokenToVerify === ACROLINX_API_TOKEN ||
 			(tokenToVerify && tokenToVerify.split('.').length === 3)
 		) {
 			return json({

@@ -4,10 +4,11 @@
 	import IssuesList from './IssuesList.svelte';
 	import ApiDebugPanel from './ApiDebugPanel.svelte';
 	import { ISSUE_COLORS } from '$lib/config/constants';
+	import type { CheckResult } from '$lib/types';
 
-	let result = $state(null);
-	let status = $state('idle');
-	let error = $state(null);
+	let result = $state<CheckResult | null>(null);
+	let status = $state<'idle' | 'submitting' | 'processing' | 'completed' | 'failed'>('idle');
+	let error = $state<string | null>(null);
 	let progress = $state(0);
 	
 	$effect(() => {
@@ -40,7 +41,7 @@
 		if (!result?.issues) return new Map();
 		
 		const grouped = new Map<string, typeof result.issues>();
-		result.issues.forEach(issue => {
+		result.issues.forEach((issue) => {
 			const goalIssues = grouped.get(issue.goalId) || [];
 			goalIssues.push(issue);
 			grouped.set(issue.goalId, goalIssues);

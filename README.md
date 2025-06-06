@@ -23,7 +23,7 @@ npm install
    The `.env` file should contain:
 
 ```
-PUBLIC_ACROLINX_API_TOKEN=your-api-token
+ACROLINX_API_TOKEN=your-api-token
 PUBLIC_ACROLINX_BASE_URL=https://your-tenant.acrolinx.cloud
 PUBLIC_ACROLINX_CLIENT_SIGNATURE=your-signature
 PUBLIC_ACROLINX_CLIENT_VERSION=1.0.0
