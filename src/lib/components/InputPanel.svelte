@@ -12,6 +12,7 @@
 
 	let content = $state('');
 	let contentType = $state<'text' | 'file'>('text');
+	let fileName = $state<string | undefined>(undefined);
 	let selectedLanguage = $state('en');
 	let selectedProfile = $state('');
 
@@ -39,16 +40,18 @@
 			await checkService.submitCheck(content, {
 				contentType,
 				profileId: selectedProfile,
-				languageId: selectedLanguage
+				languageId: selectedLanguage,
+				fileName
 			});
 		} catch (error) {
 			console.error('Check failed:', error);
 		}
 	}
 
-	function handleContentChange(newContent: string, type: 'text' | 'file') {
+	function handleContentChange(newContent: string, type: 'text' | 'file', newFileName?: string) {
 		content = newContent;
 		contentType = type;
+		fileName = newFileName;
 	}
 
 	function handleConfigChange(config: { language: string; profile: string }) {

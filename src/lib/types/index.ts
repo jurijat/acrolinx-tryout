@@ -63,6 +63,7 @@ export interface CheckConfig {
   contentType: 'file' | 'text';
   profileId: string;
   languageId: string;
+  fileName?: string;
 }
 
 export interface CheckingCapabilities {

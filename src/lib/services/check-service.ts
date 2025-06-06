@@ -115,7 +115,8 @@ class CheckService {
           content,
           contentType: config.contentType,
           guidanceProfileId: config.profileId,
-          languageId: config.languageId
+          languageId: config.languageId,
+          fileName: config.fileName
         })
       });
 

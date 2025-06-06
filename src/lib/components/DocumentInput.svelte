@@ -1,6 +1,6 @@
 <script lang="ts">
 	interface Props {
-		onContentChange: (content: string, type: 'text' | 'file') => void;
+		onContentChange: (content: string, type: 'text' | 'file', fileName?: string) => void;
 	}
 
 	let { onContentChange }: Props = $props();
@@ -31,8 +31,20 @@
 			// Read file content
 			const reader = new FileReader();
 			reader.onload = (e) => {
-				const content = e.target?.result as string;
-				onContentChange(content, 'file');
+				let content = e.target?.result as string;
+				
+				// For base64 encoded files, extract just the base64 part
+				if (!selectedFile.type.startsWith('text/') && 
+					!selectedFile.name.endsWith('.txt') && 
+					!selectedFile.name.endsWith('.md')) {
+					// Remove the data URL prefix (e.g., "data:application/pdf;base64,")
+					const base64Index = content.indexOf('base64,');
+					if (base64Index !== -1) {
+						content = content.substring(base64Index + 7);
+					}
+				}
+				
+				onContentChange(content, 'file', selectedFile.name);
 			};
 			
 			// Check if it's a text file or needs base64 encoding

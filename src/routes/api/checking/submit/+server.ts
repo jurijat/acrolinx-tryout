@@ -24,20 +24,39 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	try {
-		const { content, contentType, guidanceProfileId, languageId } = await request.json();
+		const { content, contentType, guidanceProfileId, languageId, fileName } = await request.json();
 
 		// Determine file extension based on content
 		let reference = 'document.txt';
 		let format = 'TEXT';
 
-		// Try to detect JSON content
-		if (contentType === 'text' && content.trim().startsWith('{')) {
-			try {
-				JSON.parse(content);
-				reference = 'document.json';
+		// For file uploads, use the actual filename if provided
+		if (contentType === 'file' && fileName) {
+			reference = fileName;
+			// Determine format based on file extension
+			if (fileName.endsWith('.json')) {
 				format = 'JSON';
-			} catch (e) {
-				// Not valid JSON, keep as text
+			} else if (fileName.endsWith('.xml')) {
+				format = 'XML';
+			} else if (fileName.endsWith('.html') || fileName.endsWith('.htm')) {
+				format = 'HTML';
+			} else if (fileName.endsWith('.md')) {
+				format = 'MARKDOWN';
+			} else if (fileName.endsWith('.docx')) {
+				format = 'DOCX';
+			} else if (fileName.endsWith('.pdf')) {
+				format = 'PDF';
+			}
+		} else if (contentType === 'text') {
+			// Try to detect JSON content
+			if (content.trim().startsWith('{')) {
+				try {
+					JSON.parse(content);
+					reference = 'document.json';
+					format = 'JSON';
+				} catch (e) {
+					// Not valid JSON, keep as text
+				}
 			}
 		}
 
