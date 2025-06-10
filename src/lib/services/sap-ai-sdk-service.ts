@@ -1,6 +1,5 @@
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import { OrchestrationClient } from '@sap-ai-sdk/orchestration';
 import type {
 	SapAiModel,
 	ChatMessage,
@@ -18,8 +17,6 @@ class SapAiSdkService {
 		isProcessing: false,
 		error: null
 	});
-
-	private orchestrationClient: OrchestrationClient | null = null;
 
 	// Public readable stores
 	public readonly isAuthenticated = derived(this.state, ($state) => $state.isAuthenticated);
@@ -39,15 +36,6 @@ class SapAiSdkService {
 		}
 
 		try {
-			// Set up the SAP AI Core service key in the environment
-			// The SDK will automatically use it
-			if (typeof window !== 'undefined' && import.meta.env.VITE_SAP_AI_CORE_SERVICE_KEY) {
-				// For local development, we can pass the service key through Vite
-				(window as any).process = {
-					env: { AICORE_SERVICE_KEY: import.meta.env.VITE_SAP_AI_CORE_SERVICE_KEY }
-				};
-			}
-
 			// Load available models
 			await this.loadModels();
 			this.updateState({ isAuthenticated: true });
@@ -134,21 +122,6 @@ class SapAiSdkService {
 		const model = get(this.availableModels).find((m) => m.id === modelId);
 		if (model) {
 			this.updateState({ selectedModel: model });
-			// Create a new orchestration client with the selected model
-			try {
-				this.orchestrationClient = new OrchestrationClient({
-					llm: {
-						model_name: modelId,
-						model_params: {
-							max_tokens: 2000,
-							temperature: 0.7
-						}
-					}
-				});
-			} catch (error) {
-				console.error('Failed to create orchestration client:', error);
-				this.updateState({ error: 'Failed to initialize model client' });
-			}
 		}
 	}
 
@@ -156,11 +129,6 @@ class SapAiSdkService {
 		const model = get(this.selectedModel);
 		if (!model) {
 			this.updateState({ error: 'Please select a model first' });
-			return;
-		}
-
-		if (!this.orchestrationClient) {
-			this.updateState({ error: 'Model client not initialized' });
 			return;
 		}
 

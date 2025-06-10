@@ -13,9 +13,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// Set the service key in the environment for the SDK
-		if (env.AICORE_SERVICE_KEY) {
-			process.env.AICORE_SERVICE_KEY = env.AICORE_SERVICE_KEY;
-		} else {
+		if (!env.AICORE_SERVICE_KEY || !process.env.AICORE_SERVICE_KEY) {
 			return json({ error: 'SAP AI Core service key not configured' }, { status: 500 });
 		}
 
