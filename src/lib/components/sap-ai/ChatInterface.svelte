@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sapAiService } from '$lib/services/sap-ai-service';
+	import { sapAiSdkService } from '$lib/services/sap-ai-sdk-service';
 	import ChatMessage from './ChatMessage.svelte';
 	import type { ChatMessage as ChatMessageType } from '$lib/types/sap-ai';
 
@@ -12,7 +12,7 @@
 
 	// Subscribe to service state
 	$effect(() => {
-		const unsubscribe = sapAiService.chatHistory.subscribe((history) => {
+		const unsubscribe = sapAiSdkService.chatHistory.subscribe((history) => {
 			messages = history;
 			// Scroll to bottom when new messages arrive
 			if (messagesContainer) {
@@ -25,21 +25,21 @@
 	});
 
 	$effect(() => {
-		const unsubscribe = sapAiService.isProcessing.subscribe((processing) => {
+		const unsubscribe = sapAiSdkService.isProcessing.subscribe((processing) => {
 			isProcessing = processing;
 		});
 		return unsubscribe;
 	});
 
 	$effect(() => {
-		const unsubscribe = sapAiService.error.subscribe((err) => {
+		const unsubscribe = sapAiSdkService.error.subscribe((err) => {
 			error = err;
 		});
 		return unsubscribe;
 	});
 
 	$effect(() => {
-		const unsubscribe = sapAiService.selectedModel.subscribe((model) => {
+		const unsubscribe = sapAiSdkService.selectedModel.subscribe((model) => {
 			selectedModel = model;
 		});
 		return unsubscribe;
@@ -56,14 +56,14 @@
 		inputValue = '';
 
 		try {
-			await sapAiService.sendChatMessage(message);
+			await sapAiSdkService.sendChatMessage(message);
 		} catch (err) {
 			console.error('Failed to send message:', err);
 		}
 	}
 
 	function clearChat() {
-		sapAiService.clearChatHistory();
+		sapAiSdkService.clearChatHistory();
 	}
 
 	function handleKeydown(event: KeyboardEvent) {

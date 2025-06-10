@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import ModelSelector from './ModelSelector.svelte';
 	import ChatInterface from './ChatInterface.svelte';
-	import { sapAiService } from '$lib/services/sap-ai-service';
+	import { sapAiSdkService } from '$lib/services/sap-ai-sdk-service';
 
 	let loading = $state(true);
 	let error = $state<string | null>(null);
@@ -11,7 +11,7 @@
 	onMount(async () => {
 		try {
 			// Initialize the service on mount (client-side only)
-			await sapAiService.initialize();
+			await sapAiSdkService.initialize();
 			loading = false;
 		} catch (err) {
 			console.error('Failed to initialize SAP AI:', err);
@@ -22,7 +22,7 @@
 
 	// Subscribe to service errors
 	$effect(() => {
-		const unsubscribe = sapAiService.error.subscribe((err) => {
+		const unsubscribe = sapAiSdkService.error.subscribe((err) => {
 			if (err && err !== error) {
 				error = err;
 			}
@@ -120,7 +120,7 @@
 						<button
 							onclick={() => {
 								error = null;
-								sapAiService.clearError();
+								sapAiSdkService.clearError();
 							}}
 							class="mt-1 text-sm text-red-600 hover:text-red-500"
 						>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { sapAiService } from '$lib/services/sap-ai-service';
+	import { sapAiSdkService } from '$lib/services/sap-ai-sdk-service';
 	import type { SapAiModel } from '$lib/types/sap-ai';
 
 	let availableModels = $state<SapAiModel[]>([]);
@@ -8,21 +8,21 @@
 
 	// Subscribe to service state
 	$effect(() => {
-		const unsubscribe = sapAiService.availableModels.subscribe((models) => {
+		const unsubscribe = sapAiSdkService.availableModels.subscribe((models) => {
 			availableModels = models;
 		});
 		return unsubscribe;
 	});
 
 	$effect(() => {
-		const unsubscribe = sapAiService.selectedModel.subscribe((model) => {
+		const unsubscribe = sapAiSdkService.selectedModel.subscribe((model) => {
 			selectedModelId = model?.id || '';
 		});
 		return unsubscribe;
 	});
 
 	$effect(() => {
-		const unsubscribe = sapAiService.isProcessing.subscribe((processing) => {
+		const unsubscribe = sapAiSdkService.isProcessing.subscribe((processing) => {
 			isLoading = processing;
 		});
 		return unsubscribe;
@@ -30,12 +30,12 @@
 
 	function handleModelChange(event: Event) {
 		const target = event.target as HTMLSelectElement;
-		sapAiService.selectModel(target.value);
+		sapAiSdkService.selectModel(target.value);
 	}
 
 	async function refreshModels() {
 		try {
-			await sapAiService.loadModels();
+			await sapAiSdkService.loadModels();
 		} catch (error) {
 			console.error('Failed to refresh models:', error);
 		}

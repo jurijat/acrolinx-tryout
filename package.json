@@ -39,6 +39,8 @@
 	},
 	"dependencies": {
 		"@duckdb/duckdb-wasm": "^1.29.1-dev132.0",
+		"@sap-ai-sdk/core": "^1.14.0",
+		"@sap-ai-sdk/orchestration": "^1.14.0",
 		"crypto-js": "^4.2.0",
 		"lucide-svelte": "^0.513.0",
 		"node-fetch": "^3.3.2"
