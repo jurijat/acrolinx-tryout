@@ -9,10 +9,10 @@
 	let { children }: Props = $props();
 </script>
 
-<div class="min-h-screen bg-gray-50 flex flex-col">
+<div class="flex min-h-screen flex-col bg-gray-50">
 	<Header />
 	<main class="flex-1 p-6">
-		<div class="max-w-7xl mx-auto">
+		<div class="mx-auto max-w-7xl">
 			{@render children()}
 		</div>
 	</main>

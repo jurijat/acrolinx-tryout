@@ -9,7 +9,7 @@
 	onMount(async () => {
 		// Initialize services
 		await authService.initialize();
-		
+
 		// Check for custom token first
 		const customToken = localStorage.getItem('custom_api_token');
 		if (customToken && !authService.isAuthenticated) {
@@ -21,7 +21,7 @@
 				localStorage.removeItem('custom_api_token');
 			}
 		}
-		
+
 		// If still not authenticated, try the API token from env
 		if (!authService.isAuthenticated) {
 			try {

@@ -14,9 +14,9 @@
 	}
 </script>
 
-<div class="space-y-2 max-h-96 overflow-y-auto scrollbar-thin">
+<div class="scrollbar-thin max-h-96 space-y-2 overflow-y-auto">
 	{#each issues as issue, index}
-		<IssueCard 
+		<IssueCard
 			{issue}
 			isExpanded={expandedIssue === `${issue.goalId}-${index}`}
 			onToggle={() => toggleIssue(`${issue.goalId}-${index}`)}

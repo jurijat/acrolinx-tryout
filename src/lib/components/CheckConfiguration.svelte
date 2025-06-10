@@ -12,25 +12,27 @@
 	let selectedProfile = $state(capabilities.defaultGuidanceProfileId || '');
 
 	// Get unique languages from profiles
-	let availableLanguages = $derived((() => {
-		const languages = new Map<string, string>();
-		capabilities.guidanceProfiles.forEach(profile => {
-			languages.set(profile.language.id, profile.language.displayName);
-		});
-		return Array.from(languages.entries()).map(([id, displayName]) => ({ id, displayName }));
-	})());
+	let availableLanguages = $derived(
+		(() => {
+			const languages = new Map<string, string>();
+			capabilities.guidanceProfiles.forEach((profile) => {
+				languages.set(profile.language.id, profile.language.displayName);
+			});
+			return Array.from(languages.entries()).map(([id, displayName]) => ({ id, displayName }));
+		})()
+	);
 
 	// Filter profiles by selected language
 	let availableProfiles = $derived(
-		capabilities.guidanceProfiles.filter(profile => profile.language.id === selectedLanguage)
+		capabilities.guidanceProfiles.filter((profile) => profile.language.id === selectedLanguage)
 	);
 
 	$effect(() => {
 		// Update selected profile if current one is not available for the language
-		if (!availableProfiles.some(p => p.id === selectedProfile)) {
+		if (!availableProfiles.some((p) => p.id === selectedProfile)) {
 			selectedProfile = availableProfiles[0]?.id || '';
 		}
-		
+
 		onConfigChange({
 			language: selectedLanguage,
 			profile: selectedProfile
@@ -38,14 +40,14 @@
 	});
 </script>
 
-<div class="space-y-4 mt-4">
+<div class="mt-4 space-y-4">
 	<div>
-		<label for="language-select" class="block text-sm font-medium text-gray-700 mb-1">
+		<label for="language-select" class="mb-1 block text-sm font-medium text-gray-700">
 			Language
 		</label>
-		<select 
+		<select
 			id="language-select"
-			class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+			class="w-full rounded-lg border border-gray-300 p-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
 			bind:value={selectedLanguage}
 		>
 			{#each availableLanguages as language}
@@ -53,14 +55,14 @@
 			{/each}
 		</select>
 	</div>
-	
+
 	<div>
-		<label for="profile-select" class="block text-sm font-medium text-gray-700 mb-1">
+		<label for="profile-select" class="mb-1 block text-sm font-medium text-gray-700">
 			Guidance Profile
 		</label>
-		<select 
+		<select
 			id="profile-select"
-			class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+			class="w-full rounded-lg border border-gray-300 p-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
 			bind:value={selectedProfile}
 		>
 			<option value="">Select a profile...</option>
@@ -68,16 +70,16 @@
 				<option value={profile.id}>{profile.displayName}</option>
 			{/each}
 		</select>
-		
+
 		{#if selectedProfile}
-			{@const profile = availableProfiles.find(p => p.id === selectedProfile)}
+			{@const profile = availableProfiles.find((p) => p.id === selectedProfile)}
 			{#if profile}
 				<div class="mt-2 text-sm text-gray-600">
 					<p class="font-medium">Goals:</p>
-					<div class="flex flex-wrap gap-1 mt-1">
+					<div class="mt-1 flex flex-wrap gap-1">
 						{#each profile.goals as goal}
-							<span 
-								class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+							<span
+								class="inline-flex items-center rounded px-2 py-0.5 text-xs font-medium"
 								style="background-color: {goal.color}20; color: {goal.color}"
 							>
 								{goal.displayName}

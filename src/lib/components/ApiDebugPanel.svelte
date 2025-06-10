@@ -40,7 +40,7 @@
 		<div class="rounded-lg border border-gray-200 bg-white">
 			<div class="flex items-center justify-between px-4 py-3">
 				<button
-					class="flex flex-1 items-center space-x-2 -mx-4 px-4 py-3 transition-colors hover:bg-gray-50"
+					class="-mx-4 flex flex-1 items-center space-x-2 px-4 py-3 transition-colors hover:bg-gray-50"
 					onclick={() => (showRequest = !showRequest)}
 				>
 					{#if showRequest}
@@ -51,7 +51,7 @@
 					<span class="text-sm font-medium">Request Sent to Acrolinx</span>
 				</button>
 				<button
-					class="rounded p-1 transition-colors hover:bg-gray-200 ml-2"
+					class="ml-2 rounded p-1 transition-colors hover:bg-gray-200"
 					onclick={() => copyToClipboard(formatJson(request), 'request')}
 				>
 					{#if copiedRequest}
@@ -77,7 +77,7 @@
 		<div class="rounded-lg border border-gray-200 bg-white">
 			<div class="flex items-center justify-between px-4 py-3">
 				<button
-					class="flex flex-1 items-center space-x-2 -mx-4 px-4 py-3 transition-colors hover:bg-gray-50"
+					class="-mx-4 flex flex-1 items-center space-x-2 px-4 py-3 transition-colors hover:bg-gray-50"
 					onclick={() => (showResponse = !showResponse)}
 				>
 					{#if showResponse}
@@ -88,7 +88,7 @@
 					<span class="text-sm font-medium">Response from Acrolinx</span>
 				</button>
 				<button
-					class="rounded p-1 transition-colors hover:bg-gray-200 ml-2"
+					class="ml-2 rounded p-1 transition-colors hover:bg-gray-200"
 					onclick={() => copyToClipboard(formatJson(response), 'response')}
 				>
 					{#if copiedResponse}

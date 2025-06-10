@@ -117,7 +117,7 @@ class DatabaseService {
         goals_json, issues_json, metrics_json
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
-		
+
 		await stmt.query(
 			id,
 			timestamp.toISOString(),
@@ -136,7 +136,7 @@ class DatabaseService {
 			JSON.stringify(record.issues || []),
 			JSON.stringify(record.metrics || [])
 		);
-		
+
 		await stmt.close();
 	}
 
@@ -148,7 +148,7 @@ class DatabaseService {
       ORDER BY timestamp DESC 
       LIMIT ? OFFSET ?
     `);
-		
+
 		const result = await stmt.query(limit, offset);
 		await stmt.close();
 
@@ -182,10 +182,10 @@ class DatabaseService {
 		const stmt = await this.connection.prepare(`
       SELECT * FROM check_history WHERE id = ?
     `);
-		
+
 		const result = await stmt.query(id);
 		await stmt.close();
-		
+
 		const rows = result.toArray();
 		if (rows.length === 0) return null;
 
@@ -213,7 +213,7 @@ class DatabaseService {
 		const stmt = await this.connection.prepare(`
       DELETE FROM check_history WHERE id = ?
     `);
-		
+
 		await stmt.query(id);
 		await stmt.close();
 	}

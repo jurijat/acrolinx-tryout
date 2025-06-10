@@ -94,10 +94,10 @@
 	}
 </script>
 
-<div class="bg-white rounded-lg shadow p-6">
-	<div class="flex items-center justify-between mb-6">
+<div class="rounded-lg bg-white p-6 shadow">
+	<div class="mb-6 flex items-center justify-between">
 		<h2 class="text-lg font-semibold">Check History</h2>
-		<button 
+		<button
 			class="text-sm text-gray-600 hover:text-gray-900"
 			onclick={loadHistory}
 			disabled={loading}
@@ -107,39 +107,39 @@
 	</div>
 
 	{#if loading}
-		<div class="text-center py-8">
-			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-			<p class="text-gray-600 mt-2">Loading history...</p>
+		<div class="py-8 text-center">
+			<div class="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
+			<p class="mt-2 text-gray-600">Loading history...</p>
 		</div>
 	{:else if error}
-		<div class="bg-red-50 border border-red-200 rounded-lg p-4">
+		<div class="rounded-lg border border-red-200 bg-red-50 p-4">
 			<p class="text-sm text-red-800">{error}</p>
 		</div>
 	{:else}
 		<!-- Statistics Summary -->
-		<div class="grid grid-cols-3 gap-4 mb-6">
-			<div class="bg-gray-50 rounded-lg p-4">
-				<div class="flex items-center space-x-2 text-gray-600 mb-1">
-					<BarChart class="w-4 h-4" />
+		<div class="mb-6 grid grid-cols-3 gap-4">
+			<div class="rounded-lg bg-gray-50 p-4">
+				<div class="mb-1 flex items-center space-x-2 text-gray-600">
+					<BarChart class="h-4 w-4" />
 					<span class="text-xs">Total Checks</span>
 				</div>
 				<p class="text-2xl font-semibold">{statistics.totalChecks}</p>
 			</div>
-			<div class="bg-gray-50 rounded-lg p-4">
-				<div class="flex items-center space-x-2 text-gray-600 mb-1">
-					<BarChart class="w-4 h-4" />
+			<div class="rounded-lg bg-gray-50 p-4">
+				<div class="mb-1 flex items-center space-x-2 text-gray-600">
+					<BarChart class="h-4 w-4" />
 					<span class="text-xs">Average Score</span>
 				</div>
 				<p class="text-2xl font-semibold {getScoreColor(statistics.averageScore)}">
 					{statistics.averageScore}
 				</p>
 			</div>
-			<div class="bg-gray-50 rounded-lg p-4">
-				<div class="flex items-center space-x-2 text-gray-600 mb-1">
-					<Globe class="w-4 h-4" />
+			<div class="rounded-lg bg-gray-50 p-4">
+				<div class="mb-1 flex items-center space-x-2 text-gray-600">
+					<Globe class="h-4 w-4" />
 					<span class="text-xs">Top Profile</span>
 				</div>
-				<p class="text-sm font-medium truncate">
+				<p class="truncate text-sm font-medium">
 					{statistics.checksByProfile[0]?.profile || 'N/A'}
 				</p>
 			</div>
@@ -147,28 +147,26 @@
 
 		<!-- History List -->
 		{#if records.length === 0}
-			<p class="text-gray-500 text-center py-8">
-				No checks yet. Submit a document to get started!
-			</p>
+			<p class="py-8 text-center text-gray-500">No checks yet. Submit a document to get started!</p>
 		{:else}
 			<div class="space-y-2">
 				{#each records as record}
-					<div class="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+					<div class="rounded-lg border p-4 transition-colors hover:bg-gray-50">
 						<div class="flex items-start justify-between">
-							<div class="flex-1 min-w-0">
-								<div class="flex items-center space-x-2 mb-1">
-									<FileText class="w-4 h-4 text-gray-400" />
-									<span class="text-sm font-medium truncate">
+							<div class="min-w-0 flex-1">
+								<div class="mb-1 flex items-center space-x-2">
+									<FileText class="h-4 w-4 text-gray-400" />
+									<span class="truncate text-sm font-medium">
 										{record.fileName || 'Text Input'}
 									</span>
-									<span class="text-xs px-2 py-0.5 rounded-full {getStatusBadge(record.status)}">
+									<span class="rounded-full px-2 py-0.5 text-xs {getStatusBadge(record.status)}">
 										{record.status}
 									</span>
 								</div>
-								
+
 								<div class="flex items-center space-x-4 text-xs text-gray-600">
 									<span class="flex items-center space-x-1">
-										<Calendar class="w-3 h-3" />
+										<Calendar class="h-3 w-3" />
 										<span>{formatDate(record.timestamp)}</span>
 									</span>
 									<span>{record.guidanceProfileName}</span>
@@ -182,21 +180,21 @@
 									{/if}
 								</div>
 							</div>
-							
-							<div class="flex items-center space-x-1 ml-4">
-								<button 
-									class="p-1 hover:bg-gray-200 rounded transition-colors"
+
+							<div class="ml-4 flex items-center space-x-1">
+								<button
+									class="rounded p-1 transition-colors hover:bg-gray-200"
 									onclick={() => viewDetails(record)}
 									title="View details"
 								>
-									<Eye class="w-4 h-4 text-gray-600" />
+									<Eye class="h-4 w-4 text-gray-600" />
 								</button>
-								<button 
-									class="p-1 hover:bg-gray-200 rounded transition-colors"
+								<button
+									class="rounded p-1 transition-colors hover:bg-gray-200"
 									onclick={() => deleteRecord(record.id)}
 									title="Delete"
 								>
-									<Trash2 class="w-4 h-4 text-gray-600" />
+									<Trash2 class="h-4 w-4 text-gray-600" />
 								</button>
 							</div>
 						</div>
@@ -209,55 +207,60 @@
 
 <!-- Details Modal -->
 {#if showDetails && selectedRecord}
-	<div 
-		class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+	<div
+		class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black"
 		onclick={(e) => e.target === e.currentTarget && (showDetails = false)}
 	>
-		<div class="bg-white rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden flex flex-col">
-			<div class="p-6 border-b">
+		<div
+			class="mx-4 flex max-h-[80vh] w-full max-w-2xl flex-col overflow-hidden rounded-lg bg-white shadow-xl"
+		>
+			<div class="border-b p-6">
 				<h3 class="text-lg font-semibold">Check Details</h3>
 			</div>
-			
-			<div class="p-6 overflow-y-auto flex-1">
+
+			<div class="flex-1 overflow-y-auto p-6">
 				<div class="space-y-4">
 					<div>
-						<h4 class="text-sm font-medium text-gray-700 mb-1">Document</h4>
+						<h4 class="mb-1 text-sm font-medium text-gray-700">Document</h4>
 						<p class="text-sm">{selectedRecord.fileName || 'Text Input'}</p>
 					</div>
-					
+
 					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<h4 class="text-sm font-medium text-gray-700 mb-1">Profile</h4>
+							<h4 class="mb-1 text-sm font-medium text-gray-700">Profile</h4>
 							<p class="text-sm">{selectedRecord.guidanceProfileName}</p>
 						</div>
 						<div>
-							<h4 class="text-sm font-medium text-gray-700 mb-1">Language</h4>
+							<h4 class="mb-1 text-sm font-medium text-gray-700">Language</h4>
 							<p class="text-sm">{selectedRecord.language}</p>
 						</div>
 					</div>
-					
+
 					{#if selectedRecord.score !== undefined}
 						<div>
-							<h4 class="text-sm font-medium text-gray-700 mb-1">Score</h4>
+							<h4 class="mb-1 text-sm font-medium text-gray-700">Score</h4>
 							<p class="text-2xl font-semibold {getScoreColor(selectedRecord.score)}">
 								{selectedRecord.score}
 							</p>
 						</div>
 					{/if}
-					
+
 					<div>
-						<h4 class="text-sm font-medium text-gray-700 mb-1">Content Preview</h4>
-						<div class="bg-gray-50 rounded p-3 max-h-40 overflow-y-auto">
-							<pre class="text-xs whitespace-pre-wrap">{selectedRecord.content.substring(0, 500)}...</pre>
+						<h4 class="mb-1 text-sm font-medium text-gray-700">Content Preview</h4>
+						<div class="max-h-40 overflow-y-auto rounded bg-gray-50 p-3">
+							<pre class="text-xs whitespace-pre-wrap">{selectedRecord.content.substring(
+									0,
+									500
+								)}...</pre>
 						</div>
 					</div>
 				</div>
 			</div>
-			
-			<div class="p-6 border-t">
-				<button 
-					class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
-					onclick={() => showDetails = false}
+
+			<div class="border-t p-6">
+				<button
+					class="rounded bg-gray-200 px-4 py-2 text-gray-800 transition-colors hover:bg-gray-300"
+					onclick={() => (showDetails = false)}
 				>
 					Close
 				</button>

@@ -17,20 +17,20 @@
 	let selectedProfile = $state('');
 
 	let checkStatus = $state('idle');
-	
+
 	$effect(() => {
 		const unsubscribe = checkService.status.subscribe((status) => {
 			checkStatus = status;
 		});
-		
+
 		return unsubscribe;
 	});
 
 	let isValid = $derived(
-		content.length > 0 && 
-		selectedProfile !== '' &&
-		checkStatus !== 'processing' &&
-		checkStatus !== 'submitting'
+		content.length > 0 &&
+			selectedProfile !== '' &&
+			checkStatus !== 'processing' &&
+			checkStatus !== 'submitting'
 	);
 
 	async function handleCheck() {
@@ -60,20 +60,17 @@
 	}
 </script>
 
-<div class="bg-white rounded-lg shadow p-6">
-	<h2 class="text-lg font-semibold mb-4">Document Input</h2>
-	
+<div class="rounded-lg bg-white p-6 shadow">
+	<h2 class="mb-4 text-lg font-semibold">Document Input</h2>
+
 	<DocumentInput onContentChange={handleContentChange} />
-	
+
 	{#if capabilities}
-		<CheckConfiguration 
-			{capabilities}
-			onConfigChange={handleConfigChange}
-		/>
+		<CheckConfiguration {capabilities} onConfigChange={handleConfigChange} />
 	{/if}
-	
-	<button 
-		class="w-full mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+
+	<button
+		class="mt-4 w-full rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
 		disabled={!isValid}
 		onclick={handleCheck}
 	>
