@@ -2,18 +2,39 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 
+interface ServiceKey {
+	serviceurls: {
+		AI_API_URL: string;
+	};
+	appname: string;
+	clientid: string;
+	clientsecret: string;
+	identityzone: string;
+	identityzoneid: string;
+	url: string;
+}
+
 export const POST: RequestHandler = async () => {
 	try {
-		// Check if SAP AI Core credentials are configured
-		if (!env.SAP_AI_CORE_AUTH_URL || !env.SAP_AI_CORE_CLIENT_ID || !env.SAP_AI_CORE_CLIENT_SECRET) {
-			return json({ error: 'SAP AI Core credentials not configured' }, { status: 500 });
+		// Check if SAP AI Core service key is configured
+		if (!env.SAP_AI_CORE_SERVICE_KEY) {
+			return json({ error: 'SAP AI Core service key not configured' }, { status: 500 });
+		}
+
+		// Parse the service key
+		let serviceKey: ServiceKey;
+		try {
+			serviceKey = JSON.parse(env.SAP_AI_CORE_SERVICE_KEY);
+		} catch (e) {
+			console.error('Failed to parse SAP AI Core service key:', e);
+			return json({ error: 'Invalid SAP AI Core service key format' }, { status: 500 });
 		}
 
 		// OAuth2 client credentials flow
-		const tokenUrl = `${env.SAP_AI_CORE_AUTH_URL}/oauth/token`;
-		const credentials = Buffer.from(
-			`${env.SAP_AI_CORE_CLIENT_ID}:${env.SAP_AI_CORE_CLIENT_SECRET}`
-		).toString('base64');
+		const tokenUrl = `${serviceKey.url}/oauth/token`;
+		const credentials = Buffer.from(`${serviceKey.clientid}:${serviceKey.clientsecret}`).toString(
+			'base64'
+		);
 
 		const response = await fetch(tokenUrl, {
 			method: 'POST',
@@ -35,7 +56,8 @@ export const POST: RequestHandler = async () => {
 		return json({
 			access_token: data.access_token,
 			token_type: data.token_type,
-			expires_in: data.expires_in
+			expires_in: data.expires_in,
+			api_url: serviceKey.serviceurls.AI_API_URL
 		});
 	} catch (error) {
 		console.error('SAP AI Core auth error:', error);

@@ -4,23 +4,32 @@ import { env } from '$env/dynamic/private';
 import type { GrammarCheckRequest, GrammarCheckResponse, GrammarError } from '$lib/types/sap-ai';
 import { TextChunker } from '$lib/utils/text-chunker';
 
+interface ServiceKey {
+	serviceurls: {
+		AI_API_URL: string;
+	};
+}
+
 const GRAMMAR_CHECK_PROMPT = `You are a professional grammar checker. Analyze the following text and identify any grammar, spelling, punctuation, or style issues.
 
-For each issue found, provide:
-1. The exact text that has the issue
-2. The type of error (grammar, spelling, punctuation, or style)
-3. The severity (error, warning, or suggestion)
-4. A clear explanation of the issue
-5. One or more suggestions for correction
-
-Format your response as a JSON array of errors. Each error should have this structure:
+For each issue found, provide a JSON response with this exact structure:
 {
-  "text": "the exact problematic text",
-  "type": "grammar|spelling|punctuation|style",
-  "severity": "error|warning|suggestion",
-  "message": "explanation of the issue",
-  "suggestions": ["suggestion 1", "suggestion 2"]
+  "errors": [
+    {
+      "text": "the exact problematic text",
+      "type": "grammar|spelling|punctuation|style",
+      "severity": "error|warning|suggestion",
+      "message": "explanation of the issue",
+      "suggestions": ["suggestion 1", "suggestion 2"],
+      "position": <character position in the text>
+    }
+  ]
 }
+
+IMPORTANT: 
+- The "position" field must be the exact character index where the error starts in the original text
+- Only return the JSON object, no other text
+- If no errors are found, return {"errors": []}
 
 Text to analyze:
 `;
@@ -50,23 +59,93 @@ export const POST: RequestHandler = async ({ request }) => {
 		const chunks = chunker.chunk(body.text);
 		const allErrors: GrammarError[] = [];
 
-		// Process each chunk
-		for (let i = 0; i < chunks.length; i++) {
-			const chunk = chunks[i];
-
-			// In a real implementation, this would call SAP AI Core API
-			if (!env.SAP_AI_CORE_URL) {
-				// Generate mock errors for demonstration
+		// Check if service key is configured
+		if (!env.SAP_AI_CORE_SERVICE_KEY) {
+			// Generate mock errors for demonstration
+			for (const chunk of chunks) {
 				const mockErrors = generateMockErrors(chunk.text, chunk.startOffset);
 				allErrors.push(...mockErrors);
-				continue;
 			}
+		} else {
+			// Parse service key to get API URL
+			const serviceKey: ServiceKey = JSON.parse(env.SAP_AI_CORE_SERVICE_KEY);
+			const apiUrl = serviceKey.serviceurls.AI_API_URL;
 
-			// TODO: Implement actual SAP AI Core API call for each chunk
-			// const prompt = GRAMMAR_CHECK_PROMPT + chunk.text;
-			// const response = await callSapAiCore(prompt, body.model, authHeader);
-			// const errors = parseGrammarCheckResponse(response, chunk);
-			// allErrors.push(...errors);
+			// Process each chunk with SAP AI Core
+			for (const chunk of chunks) {
+				const chatUrl = `${apiUrl}/v2/inference/deployments/${body.model}/chat/completions`;
+
+				const aiCoreRequest = {
+					messages: [
+						{
+							role: 'system',
+							content:
+								'You are a professional grammar checker. Always respond with valid JSON only.'
+						},
+						{
+							role: 'user',
+							content: GRAMMAR_CHECK_PROMPT + chunk.text
+						}
+					],
+					max_tokens: 2000,
+					temperature: 0.3, // Lower temperature for more consistent grammar checking
+					n: 1,
+					stream: false
+				};
+
+				const response = await fetch(chatUrl, {
+					method: 'POST',
+					headers: {
+						Authorization: authHeader,
+						'AI-Resource-Group': env.SAP_AI_CORE_RESOURCE_GROUP || 'default',
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(aiCoreRequest)
+				});
+
+				if (!response.ok) {
+					console.error('SAP AI Core grammar check error:', response.status, await response.text());
+					continue;
+				}
+
+				const aiResponse = await response.json();
+				const content = aiResponse.choices[0]?.message?.content;
+
+				if (content) {
+					try {
+						// Parse the JSON response
+						const result = JSON.parse(content);
+						if (result.errors && Array.isArray(result.errors)) {
+							// Convert to our format and adjust offsets
+							const chunkErrors: GrammarError[] = result.errors.map((error: any, index: number) => {
+								// Find the actual position of the error text in the chunk
+								const errorPosition = error.position || chunk.text.indexOf(error.text);
+
+								return {
+									id: `error-${chunk.id}-${index}`,
+									type: error.type || 'grammar',
+									severity: error.severity || 'error',
+									offset: chunk.startOffset + (errorPosition >= 0 ? errorPosition : 0),
+									length: error.text.length,
+									message: error.message,
+									suggestions: error.suggestions || [],
+									context: {
+										before: chunk.text.substring(Math.max(0, errorPosition - 20), errorPosition),
+										error: error.text,
+										after: chunk.text.substring(
+											errorPosition + error.text.length,
+											errorPosition + error.text.length + 20
+										)
+									}
+								};
+							});
+							allErrors.push(...chunkErrors);
+						}
+					} catch (parseError) {
+						console.error('Failed to parse AI response:', parseError, content);
+					}
+				}
+			}
 		}
 
 		// Merge overlapping results

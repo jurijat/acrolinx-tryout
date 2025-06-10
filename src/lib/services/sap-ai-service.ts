@@ -22,6 +22,7 @@ class SapAiService {
 
 	private accessToken: string | null = null;
 	private tokenExpiresAt: Date | null = null;
+	private apiUrl: string | null = null;
 
 	// Public readable stores
 	public readonly isAuthenticated = derived(this.state, ($state) => $state.isAuthenticated);
@@ -53,7 +54,7 @@ class SapAiService {
 		if (!browser) {
 			return; // Skip authentication on server side
 		}
-		
+
 		try {
 			const response = await fetch('/api/sap-ai/auth/token', {
 				method: 'POST',
@@ -67,6 +68,7 @@ class SapAiService {
 			const data = await response.json();
 			this.accessToken = data.access_token;
 			this.tokenExpiresAt = new Date(Date.now() + data.expires_in * 1000);
+			this.apiUrl = data.api_url; // Store the API URL from auth response
 			this.updateState({ isAuthenticated: true });
 		} catch (error) {
 			console.error('SAP AI authentication error:', error);
@@ -85,7 +87,7 @@ class SapAiService {
 		if (!browser) {
 			return; // Skip on server side
 		}
-		
+
 		try {
 			await this.ensureAuthenticated();
 			this.updateState({ isProcessing: true, error: null });

@@ -3,45 +3,11 @@ import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 import type { SapAiModel } from '$lib/types/sap-ai';
 
-// Mock models for now - replace with actual SAP AI Core API call
-const AVAILABLE_MODELS: SapAiModel[] = [
-	{
-		id: 'gpt-4',
-		name: 'GPT-4',
-		description: 'Most capable model for complex tasks',
-		capabilities: ['chat', 'grammar-check', 'text-generation'],
-		maxTokens: 8192,
-		vendor: 'OpenAI',
-		version: '4.0'
-	},
-	{
-		id: 'gpt-3.5-turbo',
-		name: 'GPT-3.5 Turbo',
-		description: 'Fast and efficient for most tasks',
-		capabilities: ['chat', 'grammar-check', 'text-generation'],
-		maxTokens: 4096,
-		vendor: 'OpenAI',
-		version: '3.5'
-	},
-	{
-		id: 'claude-3-opus',
-		name: 'Claude 3 Opus',
-		description: 'Advanced reasoning and analysis',
-		capabilities: ['chat', 'grammar-check', 'text-generation', 'code-generation'],
-		maxTokens: 200000,
-		vendor: 'Anthropic',
-		version: '3.0'
-	},
-	{
-		id: 'claude-3-sonnet',
-		name: 'Claude 3 Sonnet',
-		description: 'Balanced performance and speed',
-		capabilities: ['chat', 'grammar-check', 'text-generation'],
-		maxTokens: 200000,
-		vendor: 'Anthropic',
-		version: '3.0'
-	}
-];
+interface ServiceKey {
+	serviceurls: {
+		AI_API_URL: string;
+	};
+}
 
 export const GET: RequestHandler = async ({ request }) => {
 	try {
@@ -51,23 +17,92 @@ export const GET: RequestHandler = async ({ request }) => {
 			return json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
-		// In a real implementation, this would call SAP AI Core API
-		// to get the list of available models for the resource group
-		if (!env.SAP_AI_CORE_URL) {
+		// Check if service key is configured
+		if (!env.SAP_AI_CORE_SERVICE_KEY) {
 			// Return mock models if SAP AI Core is not configured
-			return json(AVAILABLE_MODELS);
+			return json([
+				{
+					id: 'gpt-4',
+					name: 'GPT-4',
+					description: 'Most capable model for complex tasks',
+					capabilities: ['chat', 'grammar-check', 'text-generation'],
+					maxTokens: 8192,
+					vendor: 'OpenAI',
+					version: '4.0'
+				},
+				{
+					id: 'gpt-3.5-turbo',
+					name: 'GPT-3.5 Turbo',
+					description: 'Fast and efficient for most tasks',
+					capabilities: ['chat', 'grammar-check', 'text-generation'],
+					maxTokens: 4096,
+					vendor: 'OpenAI',
+					version: '3.5'
+				}
+			]);
 		}
 
-		// TODO: Implement actual SAP AI Core API call
-		// const response = await fetch(`${env.SAP_AI_CORE_URL}/v2/lm/models`, {
-		//     headers: {
-		//         'Authorization': authHeader,
-		//         'AI-Resource-Group': env.SAP_AI_CORE_RESOURCE_GROUP
-		//     }
-		// });
+		// Parse service key to get API URL
+		const serviceKey: ServiceKey = JSON.parse(env.SAP_AI_CORE_SERVICE_KEY);
+		const apiUrl = serviceKey.serviceurls.AI_API_URL;
 
-		// For now, return mock models
-		return json(AVAILABLE_MODELS);
+		// Call SAP AI Core to get deployments
+		const deploymentsUrl = `${apiUrl}/v2/lm/deployments`;
+		const response = await fetch(deploymentsUrl, {
+			headers: {
+				Authorization: authHeader,
+				'AI-Resource-Group': env.SAP_AI_CORE_RESOURCE_GROUP || 'default',
+				'Content-Type': 'application/json'
+			}
+		});
+
+		if (!response.ok) {
+			console.error('Failed to fetch deployments:', response.status, await response.text());
+			// Fall back to mock models
+			return json([
+				{
+					id: 'gpt-4',
+					name: 'GPT-4 (Mock)',
+					description: 'Configure SAP AI Core to see real models',
+					capabilities: ['chat', 'grammar-check'],
+					maxTokens: 8192,
+					vendor: 'OpenAI',
+					version: '4.0'
+				}
+			]);
+		}
+
+		const deploymentsData = await response.json();
+
+		// Transform SAP AI Core deployments to our model format
+		const models: SapAiModel[] =
+			deploymentsData.resources?.map((deployment: any) => ({
+				id: deployment.id,
+				name: deployment.configurationName || deployment.scenarioId,
+				description: `${deployment.scenarioId} deployment`,
+				capabilities: ['chat', 'text-generation'],
+				maxTokens: 4096, // Default, as SAP AI Core doesn't provide this
+				vendor:
+					deployment.details?.resources?.backend_details?.model?.name?.split('/')[0] || 'Unknown',
+				version: deployment.details?.resources?.backend_details?.model?.version || 'latest'
+			})) || [];
+
+		// If no deployments found, return a helpful message
+		if (models.length === 0) {
+			return json([
+				{
+					id: 'no-deployments',
+					name: 'No Deployments Found',
+					description: 'Please deploy a model in SAP AI Core first',
+					capabilities: [],
+					maxTokens: 0,
+					vendor: 'None',
+					version: 'N/A'
+				}
+			]);
+		}
+
+		return json(models);
 	} catch (error) {
 		console.error('Failed to fetch models:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });

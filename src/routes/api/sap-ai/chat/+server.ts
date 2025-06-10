@@ -3,6 +3,12 @@ import type { RequestHandler } from './$types';
 import { env } from '$env/dynamic/private';
 import type { ChatCompletionRequest, ChatCompletionResponse } from '$lib/types/sap-ai';
 
+interface ServiceKey {
+	serviceurls: {
+		AI_API_URL: string;
+	};
+}
+
 export const POST: RequestHandler = async ({ request }) => {
 	try {
 		// Verify authorization header
@@ -18,8 +24,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			return json({ error: 'Invalid request: model and messages are required' }, { status: 400 });
 		}
 
-		// In a real implementation, this would call SAP AI Core API
-		if (!env.SAP_AI_CORE_URL) {
+		// Check if service key is configured
+		if (!env.SAP_AI_CORE_SERVICE_KEY) {
 			// Return mock response if SAP AI Core is not configured
 			const mockResponse: ChatCompletionResponse = {
 				id: `chat-${Date.now()}`,
@@ -28,60 +34,88 @@ export const POST: RequestHandler = async ({ request }) => {
 					{
 						message: {
 							role: 'assistant',
-							content:
-								'This is a mock response. Please configure SAP AI Core credentials to enable actual AI responses.'
+							content: `I received your message: "${body.messages[body.messages.length - 1].content}". This is a mock response - please configure SAP AI Core service key to enable actual AI responses.`
 						},
 						finish_reason: 'stop',
 						index: 0
 					}
 				],
 				usage: {
-					prompt_tokens: 10,
-					completion_tokens: 15,
-					total_tokens: 25
+					prompt_tokens: 50,
+					completion_tokens: 30,
+					total_tokens: 80
 				}
 			};
 			return json(mockResponse);
 		}
 
-		// TODO: Implement actual SAP AI Core API call
-		// const response = await fetch(`${env.SAP_AI_CORE_URL}/v2/completion`, {
-		//     method: 'POST',
-		//     headers: {
-		//         'Content-Type': 'application/json',
-		//         'Authorization': authHeader,
-		//         'AI-Resource-Group': env.SAP_AI_CORE_RESOURCE_GROUP
-		//     },
-		//     body: JSON.stringify({
-		//         model: body.model,
-		//         messages: body.messages,
-		//         temperature: body.temperature || 0.7,
-		//         max_tokens: body.maxTokens || 2000
-		//     })
-		// });
+		// Parse service key to get API URL
+		const serviceKey: ServiceKey = JSON.parse(env.SAP_AI_CORE_SERVICE_KEY);
+		const apiUrl = serviceKey.serviceurls.AI_API_URL;
 
-		// For now, return a mock response
-		const mockResponse: ChatCompletionResponse = {
-			id: `chat-${Date.now()}`,
-			model: body.model,
-			choices: [
+		// Prepare the request for SAP AI Core
+		// The endpoint format is: /v2/inference/deployments/{deploymentId}/chat/completions
+		const chatUrl = `${apiUrl}/v2/inference/deployments/${body.model}/chat/completions`;
+
+		// Transform messages to SAP AI Core format
+		const aiCoreRequest = {
+			messages: body.messages.map((msg) => ({
+				role: msg.role,
+				content: msg.content
+			})),
+			max_tokens: body.maxTokens || 2000,
+			temperature: body.temperature || 0.7,
+			n: 1,
+			stream: false
+		};
+
+		const response = await fetch(chatUrl, {
+			method: 'POST',
+			headers: {
+				Authorization: authHeader,
+				'AI-Resource-Group': env.SAP_AI_CORE_RESOURCE_GROUP || 'default',
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(aiCoreRequest)
+		});
+
+		if (!response.ok) {
+			const errorText = await response.text();
+			console.error('SAP AI Core chat error:', response.status, errorText);
+
+			// Return a helpful error message
+			return json(
 				{
-					message: {
-						role: 'assistant',
-						content: `I received your message: "${body.messages[body.messages.length - 1].content}". This is a mock response - please configure SAP AI Core to enable actual AI responses.`
-					},
-					finish_reason: 'stop',
-					index: 0
-				}
-			],
-			usage: {
-				prompt_tokens: 50,
-				completion_tokens: 30,
-				total_tokens: 80
+					error: `SAP AI Core error: ${response.status} - ${errorText}`,
+					details:
+						'Please check that the deployment ID is correct and the model is properly deployed.'
+				},
+				{ status: response.status }
+			);
+		}
+
+		const aiCoreResponse = await response.json();
+
+		// Transform SAP AI Core response to our format
+		const transformedResponse: ChatCompletionResponse = {
+			id: aiCoreResponse.id || `chat-${Date.now()}`,
+			model: body.model,
+			choices: aiCoreResponse.choices.map((choice: any) => ({
+				message: {
+					role: 'assistant',
+					content: choice.message.content
+				},
+				finish_reason: choice.finish_reason,
+				index: choice.index
+			})),
+			usage: aiCoreResponse.usage || {
+				prompt_tokens: 0,
+				completion_tokens: 0,
+				total_tokens: 0
 			}
 		};
 
-		return json(mockResponse);
+		return json(transformedResponse);
 	} catch (error) {
 		console.error('Chat completion error:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });
