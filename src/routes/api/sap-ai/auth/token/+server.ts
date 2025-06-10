@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
+import { SAP_AI_CORE_SERVICE_KEY } from '$env/static/private';
 
 interface ServiceKey {
 	serviceurls: {
@@ -17,14 +17,14 @@ interface ServiceKey {
 export const POST: RequestHandler = async () => {
 	try {
 		// Check if SAP AI Core service key is configured
-		if (!env.SAP_AI_CORE_SERVICE_KEY) {
+		if (!SAP_AI_CORE_SERVICE_KEY) {
 			return json({ error: 'SAP AI Core service key not configured' }, { status: 500 });
 		}
 
 		// Parse the service key
 		let serviceKey: ServiceKey;
 		try {
-			serviceKey = JSON.parse(env.SAP_AI_CORE_SERVICE_KEY);
+			serviceKey = JSON.parse(SAP_AI_CORE_SERVICE_KEY);
 		} catch (e) {
 			console.error('Failed to parse SAP AI Core service key:', e);
 			return json({ error: 'Invalid SAP AI Core service key format' }, { status: 500 });

@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { env } from '$env/dynamic/private';
 import type { SapAiModel } from '$lib/types/sap-ai';
+import { SAP_AI_CORE_RESOURCE_GROUP, SAP_AI_CORE_SERVICE_KEY } from '$env/static/private';
 
 interface ServiceKey {
 	serviceurls: {
@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		}
 
 		// Check if service key is configured
-		if (!env.SAP_AI_CORE_SERVICE_KEY) {
+		if (!SAP_AI_CORE_SERVICE_KEY) {
 			// Return mock models if SAP AI Core is not configured
 			return json([
 				{
@@ -43,7 +43,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		}
 
 		// Parse service key to get API URL
-		const serviceKey: ServiceKey = JSON.parse(env.SAP_AI_CORE_SERVICE_KEY);
+		const serviceKey: ServiceKey = JSON.parse(SAP_AI_CORE_SERVICE_KEY);
 		const apiUrl = serviceKey.serviceurls.AI_API_URL;
 
 		// Call SAP AI Core to get deployments
@@ -51,7 +51,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		const response = await fetch(deploymentsUrl, {
 			headers: {
 				Authorization: authHeader,
-				'AI-Resource-Group': env.SAP_AI_CORE_RESOURCE_GROUP || 'default',
+				'AI-Resource-Group': SAP_AI_CORE_RESOURCE_GROUP || 'default',
 				'Content-Type': 'application/json'
 			}
 		});
