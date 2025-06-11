@@ -36,6 +36,10 @@ class SapAiService {
 		// Don't initialize on construction to avoid SSR issues
 	}
 
+	public async getAccessToken(): Promise<string | null> {
+		return this.accessToken;
+	}
+
 	public async initialize() {
 		try {
 			await this.authenticate();

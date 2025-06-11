@@ -1,11 +1,49 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { ChatCompletionRequest, ChatCompletionResponse } from '$lib/types/sap-ai';
-import { SAP_AI_CORE_SERVICE_KEY } from '$env/static/private';
+import { AICORE_SERVICE_KEY, SAP_AI_CORE_RESOURCE_GROUP } from '$env/static/private';
 
 interface ServiceKey {
 	serviceurls: {
 		AI_API_URL: string;
+	};
+}
+
+// SAP AI Core chat completion request format
+interface AICoreMessage {
+	role: 'system' | 'user' | 'assistant';
+	content: string;
+}
+
+interface AICoreCompletionRequest {
+	messages: AICoreMessage[];
+	max_tokens?: number;
+	temperature?: number;
+	top_p?: number;
+	n?: number;
+	stream?: boolean;
+	stop?: string[];
+	presence_penalty?: number;
+	frequency_penalty?: number;
+}
+
+interface AICoreCompletionResponse {
+	id: string;
+	object: string;
+	created: number;
+	model: string;
+	choices: Array<{
+		index: number;
+		message: {
+			role: string;
+			content: string;
+		};
+		finish_reason: string;
+	}>;
+	usage: {
+		prompt_tokens: number;
+		completion_tokens: number;
+		total_tokens: number;
 	};
 }
 
@@ -25,7 +63,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// Check if service key is configured
-		if (!SAP_AI_CORE_SERVICE_KEY) {
+		if (!AICORE_SERVICE_KEY) {
 			// Return mock response if SAP AI Core is not configured
 			const mockResponse: ChatCompletionResponse = {
 				id: `chat-${Date.now()}`,
@@ -50,7 +88,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		}
 
 		// Parse service key to get API URL
-		const serviceKey: ServiceKey = JSON.parse(SAP_AI_CORE_SERVICE_KEY);
+		const serviceKey: ServiceKey = JSON.parse(AICORE_SERVICE_KEY);
 		const apiUrl = serviceKey.serviceurls.AI_API_URL;
 
 		// Prepare the request for SAP AI Core
@@ -58,51 +96,78 @@ export const POST: RequestHandler = async ({ request }) => {
 		const chatUrl = `${apiUrl}/v2/inference/deployments/${body.model}/chat/completions`;
 
 		// Transform messages to SAP AI Core format
-		const aiCoreRequest = {
+		const aiCoreRequest: AICoreCompletionRequest = {
 			messages: body.messages.map((msg) => ({
-				role: msg.role,
+				role: msg.role as 'system' | 'user' | 'assistant',
 				content: msg.content
 			})),
 			max_tokens: body.maxTokens || 2000,
 			temperature: body.temperature || 0.7,
+			top_p: body.topP || 1,
 			n: 1,
 			stream: false
 		};
 
+		console.log('Calling SAP AI Core chat endpoint:', chatUrl);
+		console.log('Request payload:', JSON.stringify(aiCoreRequest, null, 2));
+
 		const response = await fetch(chatUrl, {
 			method: 'POST',
 			headers: {
-				Authorization: authHeader,
-				'AI-Resource-Group': SAP_AI_CORE_RESOURCE_GROUYSAP_AI_CORE_SERVICE_KEY || 'default',
-				'Content-Type': 'application/json'
+				'Authorization': authHeader,
+				'AI-Resource-Group': SAP_AI_CORE_RESOURCE_GROUP || 'default',
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
 			},
 			body: JSON.stringify(aiCoreRequest)
 		});
 
 		if (!response.ok) {
 			const errorText = await response.text();
-			console.error('SAP AI Core chat error:', response.status, errorText);
+			console.error('SAP AI Core chat error:', {
+				status: response.status,
+				statusText: response.statusText,
+				error: errorText,
+				url: chatUrl,
+				headers: response.headers
+			});
 
-			// Return a helpful error message
+			let errorMessage = 'SAP AI Core request failed';
+			let details = '';
+
+			// Parse error details if possible
+			try {
+				const errorData = JSON.parse(errorText);
+				if (errorData.error) {
+					errorMessage = errorData.error.message || errorData.error;
+					details = errorData.error.details || '';
+				}
+			} catch {
+				errorMessage = `HTTP ${response.status}: ${errorText}`;
+			}
+
 			return json(
 				{
-					error: `SAP AI Core error: ${response.status} - ${errorText}`,
-					details:
-						'Please check that the deployment ID is correct and the model is properly deployed.'
+					error: errorMessage,
+					details: details || 'Please check that the deployment ID is correct and the model is properly deployed.',
+					deploymentId: body.model,
+					status: response.status
 				},
 				{ status: response.status }
 			);
 		}
 
-		const aiCoreResponse = await response.json();
+		const aiCoreResponse: AICoreCompletionResponse = await response.json();
+
+		console.log('SAP AI Core response:', JSON.stringify(aiCoreResponse, null, 2));
 
 		// Transform SAP AI Core response to our format
 		const transformedResponse: ChatCompletionResponse = {
 			id: aiCoreResponse.id || `chat-${Date.now()}`,
 			model: body.model,
-			choices: aiCoreResponse.choices.map((choice: any) => ({
+			choices: aiCoreResponse.choices.map((choice) => ({
 				message: {
-					role: 'assistant',
+					role: 'assistant' as const,
 					content: choice.message.content
 				},
 				finish_reason: choice.finish_reason,
@@ -118,6 +183,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json(transformedResponse);
 	} catch (error) {
 		console.error('Chat completion error:', error);
-		return json({ error: 'Internal server error' }, { status: 500 });
+		const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+		return json({ error: 'Internal server error', details: errorMessage }, { status: 500 });
 	}
 };

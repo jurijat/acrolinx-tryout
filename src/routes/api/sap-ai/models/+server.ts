@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { SapAiModel } from '$lib/types/sap-ai';
-import { SAP_AI_CORE_RESOURCE_GROUP, SAP_AI_CORE_SERVICE_KEY } from '$env/static/private';
+import { SAP_AI_CORE_RESOURCE_GROUP, AICORE_SERVICE_KEY } from '$env/static/private';
 
 interface ServiceKey {
 	serviceurls: {
@@ -18,32 +18,13 @@ export const GET: RequestHandler = async ({ request }) => {
 		}
 
 		// Check if service key is configured
-		if (!SAP_AI_CORE_SERVICE_KEY) {
+		if (!AICORE_SERVICE_KEY) {
 			// Return mock models if SAP AI Core is not configured
-			return json([
-				{
-					id: 'gpt-4',
-					name: 'GPT-4',
-					description: 'Most capable model for complex tasks',
-					capabilities: ['chat', 'grammar-check', 'text-generation'],
-					maxTokens: 8192,
-					vendor: 'OpenAI',
-					version: '4.0'
-				},
-				{
-					id: 'gpt-3.5-turbo',
-					name: 'GPT-3.5 Turbo',
-					description: 'Fast and efficient for most tasks',
-					capabilities: ['chat', 'grammar-check', 'text-generation'],
-					maxTokens: 4096,
-					vendor: 'OpenAI',
-					version: '3.5'
-				}
-			]);
+			return json([]);
 		}
 
 		// Parse service key to get API URL
-		const serviceKey: ServiceKey = JSON.parse(SAP_AI_CORE_SERVICE_KEY);
+		const serviceKey: ServiceKey = JSON.parse(AICORE_SERVICE_KEY);
 		const apiUrl = serviceKey.serviceurls.AI_API_URL;
 
 		// Call SAP AI Core to get deployments
@@ -61,8 +42,8 @@ export const GET: RequestHandler = async ({ request }) => {
 			// Fall back to mock models
 			return json([
 				{
-					id: 'gpt-4',
-					name: 'GPT-4 (Mock)',
+					id: 'gpt-4o',
+					name: 'GPT-4o (Mock)',
 					description: 'Configure SAP AI Core to see real models',
 					capabilities: ['chat', 'grammar-check'],
 					maxTokens: 8192,

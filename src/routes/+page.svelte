@@ -4,7 +4,7 @@
 	import AcrolinxTab from '$lib/components/acrolinx/AcrolinxTab.svelte';
 	import SapAiTab from '$lib/components/sap-ai/SapAiTab.svelte';
 
-	let activeTab = $state<'acrolinx' | 'sap-ai'>('acrolinx');
+	let activeTab = $state<'acrolinx' | 'sap-ai'>('sap-ai');
 
 	function handleTabChange(tab: 'acrolinx' | 'sap-ai') {
 		activeTab = tab;

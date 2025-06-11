@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { GrammarCheckRequest, GrammarCheckResponse, GrammarError } from '$lib/types/sap-ai';
 import { TextChunker } from '$lib/utils/text-chunker';
-import { SAP_AI_CORE_RESOURCE_GROUP, SAP_AI_CORE_SERVICE_KEY } from '$env/static/private';
+import { SAP_AI_CORE_RESOURCE_GROUP, AICORE_SERVICE_KEY } from '$env/static/private';
 
 interface ServiceKey {
 	serviceurls: {
@@ -60,7 +60,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		const allErrors: GrammarError[] = [];
 
 		// Check if service key is configured
-		if (!SAP_AI_CORE_SERVICE_KEY) {
+		if (!AICORE_SERVICE_KEY) {
 			// Generate mock errors for demonstration
 			for (const chunk of chunks) {
 				const mockErrors = generateMockErrors(chunk.text, chunk.startOffset);
@@ -68,7 +68,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			}
 		} else {
 			// Parse service key to get API URL
-			const serviceKey: ServiceKey = JSON.parse(SAP_AI_CORE_SERVICE_KEY);
+			const serviceKey: ServiceKey = JSON.parse(AICORE_SERVICE_KEY);
 			const apiUrl = serviceKey.serviceurls.AI_API_URL;
 
 			// Process each chunk with SAP AI Core
