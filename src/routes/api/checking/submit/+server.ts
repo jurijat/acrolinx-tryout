@@ -7,6 +7,8 @@ import {
 } from '$env/static/public';
 import { ACROLINX_API_TOKEN } from '$env/static/private';
 import { handleApiError } from '$lib/utils/api-error-handler';
+import { llmTextCheckService } from '$lib/services/llm-text-check-service';
+import { LLM_PROVIDER } from '$env/static/private';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const authHeader = request.headers.get('Authorization');
@@ -24,7 +26,88 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	try {
-		const { content, contentType, guidanceProfileId, languageId, fileName } = await request.json();
+		const { content, contentType, guidanceProfileId, languageId, fileName, model, provider } =
+			await request.json();
+
+		console.log('[Check Submit] Request params:', { provider, model });
+
+		// Check if we should use LLM-based checking
+		if (provider === 'llm') {
+			// Use LLM-based checking
+			console.log('[Check Submit] Using LLM-based text checking');
+
+			// Determine the model to use
+			let llmModel = model;
+			if (!llmModel) {
+				// Default models based on provider
+				if (LLM_PROVIDER === 'openrouter') {
+					llmModel = 'openai/gpt-4o-mini';
+				} else if (LLM_PROVIDER === 'openai') {
+					llmModel = 'gpt-4o-mini';
+				} else if (LLM_PROVIDER === 'sap-ai-core') {
+					llmModel = 'gpt-4'; // Use your deployed model ID
+				}
+			}
+
+			// Extract text content if it's base64 encoded
+			let textContent = content;
+			if (contentType === 'file' && content.includes('base64,')) {
+				const base64Data = content.split('base64,')[1];
+				textContent = Buffer.from(base64Data, 'base64').toString('utf-8');
+			}
+
+			// Perform the check synchronously
+			try {
+				console.log('[Check Submit] About to call LLM service with model:', llmModel);
+				console.log('[Check Submit] Text content length:', textContent.length);
+				
+				const checkResult = await llmTextCheckService.checkText(textContent, llmModel);
+				console.log('[Check Submit] LLM check completed successfully');
+				console.log('[Check Submit] LLM check result:', JSON.stringify(checkResult, null, 2));
+
+				// Return result in Acrolinx-compatible format
+				const fullResponse = {
+				data: {
+					id: checkResult.id,
+					checkId: checkResult.id,
+					status: 'completed',
+					progress: 100,
+					result: checkResult,
+					report: {
+						scorecard: {
+							score: checkResult.score,
+							status: checkResult.status
+						},
+						extractedText: textContent
+					}
+				},
+				debug: {
+					provider: 'llm',
+					model: llmModel,
+					contentLength: textContent.length
+				}
+			};
+			console.log('[Check Submit] Returning LLM response:', JSON.stringify(fullResponse, null, 2));
+			return json(fullResponse);
+		} catch (llmError) {
+			console.error('[Check Submit] LLM check failed:', llmError);
+			// Return error response
+			return json({
+				error: {
+					message: llmError instanceof Error ? llmError.message : 'LLM check failed',
+					code: 'LLM_CHECK_FAILED'
+				},
+				debug: {
+					provider: 'llm',
+					model: llmModel,
+					error: llmError instanceof Error ? llmError.message : 'Unknown error'
+				}
+			}, { status: 500 });
+		}
+	}
+
+		// Otherwise use traditional Acrolinx API
+		console.log('[Check Submit] Using Acrolinx API (provider:', provider || 'default', ')');
 
 		// Determine file extension based on content
 		let reference = 'document.txt';

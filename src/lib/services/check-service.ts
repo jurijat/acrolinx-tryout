@@ -59,7 +59,7 @@ class CheckService {
 		}
 	}
 
-	async submitCheck(content: string, config: CheckConfig): Promise<void> {
+	async submitCheck(content: string, config: CheckConfig, model?: string, provider?: 'acrolinx' | 'llm'): Promise<void> {
 		// Cancel any ongoing poll
 		if (this.pollTimeout) {
 			clearTimeout(this.pollTimeout);
@@ -116,40 +116,83 @@ class CheckService {
 					contentType: config.contentType,
 					guidanceProfileId: config.profileId,
 					languageId: config.languageId,
-					fileName: config.fileName
+					fileName: config.fileName,
+					model,
+					provider
 				})
 			});
 
 			if (!response.ok) {
 				const error = await response.json();
+				console.log('[CheckService] API Error Response:', error);
 				throw new Error(error.error?.message || 'Check submission failed');
 			}
 
 			const result = await response.json();
-			const checkId = result.checkId || result.data?.id;
+			console.log('[CheckService] API Response:', JSON.stringify(result, null, 2));
+			console.log('[CheckService] Checking conditions:');
+			console.log('  - result.data?.status:', result.data?.status);
+			console.log('  - result.data?.result exists:', !!result.data?.result);
+			console.log('  - provider:', provider);
+			console.log('  - Full result.data:', result.data);
 
-			if (!checkId) {
-				throw new Error('No check ID received from server');
-			}
+			// Check if this is an LLM result (returns immediately)
+			if (result.data?.status === 'completed' && result.data?.result) {
+				// LLM check completed immediately
+				console.log('[CheckService] Detected LLM result - processing immediately');
+				const checkResult = result.data.result;
+				const duration = Date.now() - startTime;
 
-			// Store request data from the response
-			const requestData = result.debug?.request;
+				this.state.update((state) => ({
+					...state,
+					status: 'completed',
+					result: checkResult,
+					progress: 100,
+					debugData: result.debug
+				}));
 
-			this.state.update((state) => ({
-				...state,
-				currentCheckId: checkId,
-				status: 'processing',
-				debugData: {
-					request: requestData || {
-						content: content.substring(0, 1000) + '...',
-						guidanceProfileId: config.profileId,
-						languageId: config.languageId
+				// Update history record
+				if (recordId) {
+					try {
+						await databaseService.saveCheckRecord({
+							id: recordId,
+							status: 'completed',
+							checkId: checkResult.id,
+							score: checkResult.score,
+							issues: checkResult.issues || [],
+							duration
+						});
+					} catch (dbError) {
+						console.warn('Failed to update history:', dbError);
 					}
 				}
-			}));
+			} else {
+				// Traditional Acrolinx check - needs polling
+				const checkId = result.checkId || result.data?.id;
 
-			// Start polling for results
-			await this.pollForResults(checkId, recordId, startTime);
+				if (!checkId) {
+					throw new Error('No check ID received from server');
+				}
+
+				// Store request data from the response
+				const requestData = result.debug?.request;
+
+				this.state.update((state) => ({
+					...state,
+					currentCheckId: checkId,
+					status: 'processing',
+					debugData: {
+						request: requestData || {
+							content: content.substring(0, 1000) + '...',
+							guidanceProfileId: config.profileId,
+							languageId: config.languageId
+						}
+					}
+				}));
+
+				// Start polling for results
+				await this.pollForResults(checkId, recordId, startTime);
+			}
 		} catch (error) {
 			this.state.update((state) => ({
 				...state,

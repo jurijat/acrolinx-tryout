@@ -26,6 +26,19 @@ export const GET: RequestHandler = async ({ params, request }) => {
 	const checkId = params.id;
 
 	try {
+		// For LLM checks (identified by the checkId prefix), they complete immediately
+		if (checkId.startsWith('llm-check-')) {
+			// LLM checks are synchronous and complete immediately
+			// If the client is polling, it means something went wrong
+			console.warn('[Check Poll] Unexpected polling for LLM check:', checkId);
+			return json({
+				status: 'failed',
+				error: {
+					message: 'LLM checks should not require polling',
+					code: 'LLM_POLL_ERROR'
+				}
+			});
+		}
 		const response = await fetch(`${PUBLIC_ACROLINX_BASE_URL}/api/v1/checking/checks/${checkId}`, {
 			headers: {
 				'X-Acrolinx-Auth': ACROLINX_API_TOKEN,

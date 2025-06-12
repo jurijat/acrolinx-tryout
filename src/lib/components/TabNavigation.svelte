@@ -8,7 +8,7 @@
 
 	const tabs = [
 		{ id: 'acrolinx', label: 'Acrolinx', icon: '📝' },
-		{ id: 'sap-ai', label: 'SAP AI Core', icon: '🤖' }
+		{ id: 'sap-ai', label: 'LLM Text Check', icon: '🤖' }
 	] as const;
 </script>
 

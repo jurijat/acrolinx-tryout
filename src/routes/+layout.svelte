@@ -3,7 +3,6 @@
 	import { onMount } from 'svelte';
 	import { checkService } from '$lib/services/check-service';
 	import { authService } from '$lib/services/auth-service';
-	import { sapAiService } from '$lib/services/sap-ai-service';
 
 	let { children } = $props();
 
@@ -36,9 +35,6 @@
 		if (authService.isAuthenticated) {
 			await checkService.initialize();
 		}
-
-		// Initialize SAP AI service
-		await sapAiService.initialize();
 	});
 </script>
 

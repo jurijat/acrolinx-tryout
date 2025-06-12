@@ -42,7 +42,7 @@
 				profileId: selectedProfile,
 				languageId: selectedLanguage,
 				fileName
-			});
+			}, undefined, 'acrolinx');
 		} catch (error) {
 			console.error('Check failed:', error);
 		}

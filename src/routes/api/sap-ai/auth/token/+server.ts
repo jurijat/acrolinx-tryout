@@ -39,6 +39,7 @@ export const POST: RequestHandler = async () => {
 		// Create form data
 		const formData = new URLSearchParams();
 		formData.append('grant_type', 'client_credentials');
+		//formData.append('client_id', serviceKey.clientid);
 
 		// Some SAP services require additional parameters
 		if (serviceKey.identityzone) {
