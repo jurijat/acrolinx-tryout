@@ -58,6 +58,7 @@ export const POST: RequestHandler = async () => {
 
 		if (!response.ok) {
 			const error = await response.text();
+			console.log(AICORE_SERVICE_KEY);
 			console.error('SAP AI Core auth error:', {
 				status: response.status,
 				statusText: response.statusText,
@@ -77,6 +78,8 @@ export const POST: RequestHandler = async () => {
 			api_url: serviceKey.serviceurls.AI_API_URL
 		});
 	} catch (error) {
+		console.log(AICORE_SERVICE_KEY);
+
 		console.error('SAP AI Core auth error:', error);
 		return json({ error: 'Internal server error' }, { status: 500 });
 	}

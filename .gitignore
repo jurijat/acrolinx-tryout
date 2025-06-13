@@ -26,3 +26,7 @@ vite.config.ts.timestamp-*
 
 !README.md
 .cla*
+
+test-*
+
+./*.json

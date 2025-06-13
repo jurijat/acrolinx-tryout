@@ -101,7 +101,7 @@ class SapAiSdkService {
 					name: 'Gemini 1.5 Pro',
 					description: "Google's advanced model",
 					capabilities: ['chat', 'grammar-check', 'text-generation'],
-					maxTokens: 1000000,
+					maxTokens: 1000,
 					vendor: 'Google',
 					version: 'latest'
 				}
@@ -161,7 +161,7 @@ class SapAiSdkService {
 				body: JSON.stringify({
 					model: model.id,
 					messages,
-					maxTokens: 2000,
+					maxTokens: 8092,
 					temperature: 0.7
 				})
 			});

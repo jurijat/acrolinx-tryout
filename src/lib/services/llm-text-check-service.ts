@@ -1,5 +1,9 @@
-import { openAICompatibleService, type ChatCompletionRequest } from './openai-compatible-service';
-import type { AcrolinxIssue, CheckResult, GoalResult, Issue } from '$lib/types';
+import {
+	openAICompatibleService,
+	type ChatCompletionRequest,
+	type ChatCompletionWithMetadata
+} from './openai-compatible-service';
+import type { AcrolinxIssue, CheckResult, GoalResult } from '$lib/types';
 
 // Define the goals we check for
 export const TEXT_CHECK_GOALS = {
@@ -59,6 +63,16 @@ interface LLMCheckResponse {
 		sentences: number;
 		words: number;
 		issues: number;
+	};
+}
+
+interface CheckResultWithMetadata {
+	result: CheckResult;
+	requestMetadata?: {
+		request: any;
+		response: any;
+		model: string;
+		duration: number;
 	};
 }
 
@@ -144,14 +158,18 @@ Important:
 - Calculate realistic scores (perfect text = 100, typical good text = 80-90, problematic text = below 70)
 - Ensure character offsets are accurate for the original text`;
 
-	async checkText(content: string, model: string = 'openai/gpt-4o-mini'): Promise<CheckResult> {
+	async checkText(
+		content: string,
+		model: string = 'openai/gpt-4o-mini',
+		customSystemPrompt?: string
+	): Promise<CheckResultWithMetadata> {
 		try {
 			const request: ChatCompletionRequest = {
 				model,
 				messages: [
 					{
 						role: 'system',
-						content: this.SYSTEM_PROMPT
+						content: customSystemPrompt || this.SYSTEM_PROMPT
 					},
 					{
 						role: 'user',
@@ -159,13 +177,13 @@ Important:
 					}
 				],
 				temperature: 0, // Lower temperature for more consistent analysis
-				max_tokens: 100000
+				max_tokens: 8092
 			};
 
-			console.log('[LLMTextCheck] Sending request to LLM');
-			const response = await openAICompatibleService.chatCompletion(request);
+			console.log('[LLMTextCheck] Sending request to LLM using OpenAI Compatible Service');
+			const metadata = await openAICompatibleService.chatCompletionWithMetadata(request);
 			console.log('[LLMTextCheck] Received response from LLM');
-			const analysisText = response.choices[0].message.content;
+			const analysisText = metadata.response.choices[0].message.content;
 
 			// Parse the JSON response
 			let llmResponse: LLMCheckResponse;
@@ -179,11 +197,23 @@ Important:
 			} catch (error) {
 				console.error('Failed to parse LLM response:', error);
 				// Return a fallback response
-				return this.createFallbackResult(content);
+				return {
+					result: this.createFallbackResult(content)
+				};
 			}
 
 			// Transform LLM response to Acrolinx format
-			return this.transformToAcrolinxFormat(llmResponse, content);
+			const result = this.transformToAcrolinxFormat(llmResponse, content);
+
+			return {
+				result,
+				requestMetadata: {
+					request: metadata.request,
+					response: metadata.response,
+					model,
+					duration: metadata.duration
+				}
+			};
 		} catch (error) {
 			console.error('LLM text check error:', error);
 			console.error('Error details:', {
@@ -191,7 +221,9 @@ Important:
 				stack: error instanceof Error ? error.stack : undefined
 			});
 			// Return fallback result instead of throwing
-			return this.createFallbackResult(content);
+			return {
+				result: this.createFallbackResult(content)
+			};
 		}
 	}
 

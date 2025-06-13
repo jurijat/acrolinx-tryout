@@ -1,4 +1,5 @@
-import { AICORE_SERVICE_KEY, SAP_AI_CORE_RESOURCE_GROUP } from '$env/static/private';
+import { AICORE_SERVICE_KEY, AICORE_RESOURCE_GROUP } from '$env/static/private';
+import { parseServiceKey } from '$lib/utils/service-key-parser';
 import type { ChatCompletionRequest, ChatCompletionResponse } from './openai-compatible-service';
 
 interface ServiceKey {
@@ -34,7 +35,7 @@ export class SapAiDirectService {
 		if (!AICORE_SERVICE_KEY) {
 			throw new Error('SAP AI Core service key not configured');
 		}
-		this.serviceKey = JSON.parse(AICORE_SERVICE_KEY);
+		this.serviceKey = parseServiceKey(AICORE_SERVICE_KEY);
 	}
 
 	private async getAccessToken(): Promise<string> {
@@ -81,7 +82,7 @@ export class SapAiDirectService {
 			const accessToken = await this.getAccessToken();
 
 			const apiUrl = this.serviceKey.serviceurls.AI_API_URL;
-			const chatUrl = `${apiUrl}/v2/inference/deployments/${request.model}/chat/completions`;
+			const chatUrl = `${apiUrl}/v2/inference/deployments/${request.model}/completion`;
 
 			// Transform request to SAP AI Core format
 			const aiCoreRequest: AICoreCompletionRequest = {
@@ -89,7 +90,7 @@ export class SapAiDirectService {
 					role: msg.role as 'system' | 'user' | 'assistant',
 					content: msg.content
 				})),
-				max_tokens: request.max_tokens || 2000,
+				max_tokens: request.max_tokens || 8092,
 				temperature: request.temperature || 0.7,
 				top_p: request.top_p || 1,
 				n: request.n || 1,
@@ -103,7 +104,7 @@ export class SapAiDirectService {
 				method: 'POST',
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
-					'AI-Resource-Group': SAP_AI_CORE_RESOURCE_GROUP || 'default',
+					'AI-Resource-Group': AICORE_RESOURCE_GROUP || 'default',
 					'Content-Type': 'application/json',
 					Accept: 'application/json'
 				},

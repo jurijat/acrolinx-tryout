@@ -37,12 +37,17 @@
 		if (!isValid) return;
 
 		try {
-			await checkService.submitCheck(content, {
-				contentType,
-				profileId: selectedProfile,
-				languageId: selectedLanguage,
-				fileName
-			}, undefined, 'acrolinx');
+			await checkService.submitCheck(
+				content,
+				{
+					contentType,
+					profileId: selectedProfile,
+					languageId: selectedLanguage,
+					fileName
+				},
+				undefined,
+				'acrolinx'
+			);
 		} catch (error) {
 			console.error('Check failed:', error);
 		}

@@ -59,7 +59,13 @@ class CheckService {
 		}
 	}
 
-	async submitCheck(content: string, config: CheckConfig, model?: string, provider?: 'acrolinx' | 'llm'): Promise<void> {
+	async submitCheck(
+		content: string,
+		config: CheckConfig,
+		model?: string,
+		provider?: 'acrolinx' | 'llm',
+		systemPrompt?: string
+	): Promise<void> {
 		// Cancel any ongoing poll
 		if (this.pollTimeout) {
 			clearTimeout(this.pollTimeout);
@@ -118,7 +124,8 @@ class CheckService {
 					languageId: config.languageId,
 					fileName: config.fileName,
 					model,
-					provider
+					provider,
+					systemPrompt
 				})
 			});
 
@@ -142,6 +149,13 @@ class CheckService {
 				console.log('[CheckService] Detected LLM result - processing immediately');
 				const checkResult = result.data.result;
 				const duration = Date.now() - startTime;
+				
+				// Emit request/response metadata if available
+				if (result.requestMetadata) {
+					window.dispatchEvent(new CustomEvent('llm-request-response', {
+						detail: result.requestMetadata
+					}));
+				}
 
 				this.state.update((state) => ({
 					...state,

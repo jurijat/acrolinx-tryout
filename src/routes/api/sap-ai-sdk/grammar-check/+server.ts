@@ -50,8 +50,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			llm: {
 				model_name: body.model,
 				model_params: {
-					max_tokens: 2000,
-					temperature: 0.3 // Lower temperature for consistent grammar checking
+					max_tokens: 8092,
+					temperature: 0.0 // Lower temperature for consistent grammar checking
 				}
 			}
 		});

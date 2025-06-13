@@ -1,10 +1,11 @@
 import {
 	AICORE_SERVICE_KEY,
-	SAP_AI_CORE_RESOURCE_GROUP,
+	AICORE_RESOURCE_GROUP,
 	LLM_PROVIDER,
 	OPENAI_API_KEY,
 	OPENAI_BASE_URL
 } from '$env/static/private';
+import { parseServiceKey } from '$lib/utils/service-key-parser';
 
 // OpenAI-compatible interfaces
 export interface ChatMessage {
@@ -42,6 +43,12 @@ export interface ChatCompletionResponse {
 	};
 }
 
+export interface ChatCompletionWithMetadata {
+	response: ChatCompletionResponse;
+	request: ChatCompletionRequest;
+	duration: number;
+}
+
 // Provider-specific interfaces
 interface ServiceKey {
 	serviceurls: {
@@ -72,7 +79,7 @@ class SAPAICoreProvider implements LLMProvider {
 		if (!AICORE_SERVICE_KEY) {
 			throw new Error('SAP AI Core service key not configured');
 		}
-		this.serviceKey = JSON.parse(AICORE_SERVICE_KEY);
+		this.serviceKey = parseServiceKey(AICORE_SERVICE_KEY);
 	}
 
 	async getAccessToken(): Promise<string> {
@@ -121,7 +128,7 @@ class SAPAICoreProvider implements LLMProvider {
 	transformRequest(request: ChatCompletionRequest): any {
 		return {
 			messages: request.messages,
-			max_tokens: request.max_tokens || 2000,
+			max_tokens: request.max_tokens || 8092,
 			temperature: request.temperature || 0.7,
 			top_p: request.top_p || 1,
 			n: request.n || 1,
@@ -136,7 +143,7 @@ class SAPAICoreProvider implements LLMProvider {
 	getHeaders(accessToken: string): Record<string, string> {
 		return {
 			Authorization: `Bearer ${accessToken}`,
-			'AI-Resource-Group': SAP_AI_CORE_RESOURCE_GROUP || 'default',
+			'AI-Resource-Group': AICORE_RESOURCE_GROUP || 'default',
 			'Content-Type': 'application/json',
 			Accept: 'application/json'
 		};
@@ -262,6 +269,20 @@ export class OpenAICompatibleService {
 			console.error(`[${this.provider.name}] Chat completion error:`, error);
 			throw error;
 		}
+	}
+
+	async chatCompletionWithMetadata(
+		request: ChatCompletionRequest
+	): Promise<ChatCompletionWithMetadata> {
+		const startTime = Date.now();
+		const response = await this.chatCompletion(request);
+		const duration = Date.now() - startTime;
+
+		return {
+			response,
+			request,
+			duration
+		};
 	}
 
 	getProviderName(): string {

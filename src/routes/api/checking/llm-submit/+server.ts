@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { llmTextCheckService } from '$lib/services/llm-text-check-service';
-import { handleApiError } from '$lib/utils/api-error-handler';
 import { LLM_PROVIDER } from '$env/static/private';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -42,13 +41,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		// Determine the model to use
 		let llmModel = model;
 		if (!llmModel) {
+			console.error('NO MODEL GIVEN');
 			// Default models based on provider
 			if (LLM_PROVIDER === 'openrouter') {
-				llmModel = 'openai/gpt-4o-mini'; // Cost-effective model for text checking
+				llmModel = 'openai/gpt-4o'; // Cost-effective model for text checking
 			} else if (LLM_PROVIDER === 'openai') {
 				llmModel = 'gpt-4o-mini';
 			} else if (LLM_PROVIDER === 'sap-ai-core') {
-				llmModel = 'gpt-4'; // Use your deployed model ID
+				llmModel = 'gpt-35-turbo'; // Default to fast, cost-effective model
 			}
 		}
 

@@ -1,15 +1,10 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { OPENAI_API_KEY, OPENAI_BASE_URL, LLM_PROVIDER } from '$env/static/private';
+import { OPENAI_API_KEY, OPENAI_BASE_URL } from '$env/static/private';
 import type { OpenRouterModel } from '$lib/types/openrouter';
 
 export const GET: RequestHandler = async () => {
 	try {
-		// Check if we're configured to use OpenRouter
-		if (LLM_PROVIDER !== 'openrouter' && LLM_PROVIDER !== 'openai') {
-			return json({ data: [] });
-		}
-
 		if (!OPENAI_API_KEY) {
 			return json({ error: 'OpenRouter API key not configured' }, { status: 500 });
 		}
@@ -56,6 +51,8 @@ export const GET: RequestHandler = async () => {
 				// Sort by a combination of factors
 				const getPriority = (model: OpenRouterModel) => {
 					const id = model.id.toLowerCase();
+					// Exact match for openai/gpt-4o gets highest priority
+					if (id === 'openai/gpt-4o') return 100;
 					if (id.includes('gpt-4o')) return 10;
 					if (id.includes('gpt-4')) return 9;
 					if (id.includes('claude-3')) return 8;

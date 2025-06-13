@@ -1,0 +1,174 @@
+{
+  "timestamp": "2025-06-13T10:40:29.893Z",
+  "summary": {
+    "total": 33,
+    "working": 3,
+    "failing": 30
+  },
+  "workingModels": [
+    {
+      "id": "dd2d7fe17a4e7dbc",
+      "name": "ibm--granite-13b-chat-config"
+    },
+    {
+      "id": "dcf2a8b858e44256",
+      "name": "mistralai--mistral-large-instruct-config"
+    },
+    {
+      "id": "d579defaa4530d94",
+      "name": "meta--llama3.1-70b-instruct-config"
+    }
+  ],
+  "failingModels": [
+    {
+      "id": "d0931b5c20bf9ec2",
+      "name": "amazon--titan-text-express-config",
+      "error": "BadRequest"
+    },
+    {
+      "id": "d9caa0c8d8689be2",
+      "name": "amazon--titan-embed-text-config",
+      "error": "BadRequest"
+    },
+    {
+      "id": "d2590b3b70606c9e",
+      "name": "anthropic--claude-3-haiku-config",
+      "error": "BadRequest"
+    },
+    {
+      "id": "d880d6777be68735",
+      "name": "amazon--titan-text-lite-config",
+      "error": "BadRequest"
+    },
+    {
+      "id": "d8a5c0ddd71a9197",
+      "name": "anthropic--claude-3-sonnet-config",
+      "error": "BadRequest"
+    },
+    {
+      "id": "d970744a62004d5c",
+      "name": "anthropic--claude-3-opus-config",
+      "error": "BadRequest"
+    },
+    {
+      "id": "d1de49702e1907dc",
+      "name": "anthropic--claude-3.5-sonnet-config",
+      "error": "BadRequest"
+    },
+    {
+      "id": "d9fbbe5b688df576",
+      "name": "textembedding-gecko-multilingual-config",
+      "error": "Gone"
+    },
+    {
+      "id": "ddefc52c5743d1d9",
+      "name": "text-bison-config",
+      "error": "Gone"
+    },
+    {
+      "id": "df1017c53b7b2283",
+      "name": "gemini-1.5-pro-002-config",
+      "error": "NotFound"
+    },
+    {
+      "id": "daa25a8f78875089",
+      "name": "chat-bison-config",
+      "error": "Gone"
+    },
+    {
+      "id": "d855cb4b7f9bb034",
+      "name": "gemini-1.5-flash-002-config",
+      "error": "NotFound"
+    },
+    {
+      "id": "d4e0dab1891e1e4d",
+      "name": "textembedding-gecko-config",
+      "error": "Gone"
+    },
+    {
+      "id": "d0809b3d16b9fa4d",
+      "name": "gemini-1.5-pro-config",
+      "error": "NotFound"
+    },
+    {
+      "id": "d5ffc86c4d639861",
+      "name": "gemini-1.5-flash-config",
+      "error": "NotFound"
+    },
+    {
+      "id": "dc3defc6926beeda",
+      "name": "gemini-1.0-pro-config",
+      "error": "Gone"
+    },
+    {
+      "id": "d548112b440ebfec",
+      "name": "text-embedding-3-small-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "dd857461c343bdf3",
+      "name": "gpt-4-turbo-2024-04-09-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "d43878f8e270bc39",
+      "name": "gpt-4-32k-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "d98a94ea97b41f27",
+      "name": "dall-e-3-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "dd6601fe04b20deb",
+      "name": "text-embedding-3-large-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "d3d286640d7d4f14",
+      "name": "gpt-35-turbo-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "d69657d0a1a43d7f",
+      "name": "whisper-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "d7c0b27b42fb608f",
+      "name": "text-embedding-ada-002-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "dcddf4a8e031cb34",
+      "name": "gpt-35-turbo-0125-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "d026e3c4ccc6943f",
+      "name": "gpt-4o-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "d621126cba7b22d3",
+      "name": "gpt-4-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "d6f01e37f39870ee",
+      "name": "gpt-4o-2024-08-06-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "dfe94d6e2f53f990",
+      "name": "gpt-4o-mini-config",
+      "error": "Resource not found"
+    },
+    {
+      "id": "d5d3630ac15c41a7",
+      "name": "gpt-35-turbo-16k-config",
+      "error": "Gone"
+    }
+  ]
+}

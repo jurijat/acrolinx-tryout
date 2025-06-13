@@ -1,0 +1,436 @@
+{
+  "timestamp": "2025-06-13T10:51:39.603Z",
+  "resourceGroup": "default",
+  "totalDeployments": 33,
+  "deployments": [
+    {
+      "id": "dd2d7fe17a4e7dbc",
+      "configurationName": "ibm--granite-13b-chat-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "ibm--granite-13b-chat",
+        "version": "2.1.0"
+      },
+      "createdAt": "2025-01-28T12:49:30Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "dcf2a8b858e44256",
+      "configurationName": "mistralai--mistral-large-instruct-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "mistralai--mistral-large-instruct",
+        "version": "2407"
+      },
+      "createdAt": "2025-01-28T12:49:30Z",
+      "modifiedAt": "2025-06-13T10:47:23Z"
+    },
+    {
+      "id": "d579defaa4530d94",
+      "configurationName": "meta--llama3.1-70b-instruct-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "meta--llama3.1-70b-instruct",
+        "version": "202409"
+      },
+      "createdAt": "2025-01-28T12:46:22Z",
+      "modifiedAt": "2025-06-13T10:47:17Z"
+    },
+    {
+      "id": "d0931b5c20bf9ec2",
+      "configurationName": "amazon--titan-text-express-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "amazon--titan-text-express",
+        "version": "1"
+      },
+      "createdAt": "2025-01-28T12:41:11Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d9caa0c8d8689be2",
+      "configurationName": "amazon--titan-embed-text-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "amazon--titan-embed-text",
+        "version": "1.2"
+      },
+      "createdAt": "2025-01-28T12:41:11Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d2590b3b70606c9e",
+      "configurationName": "anthropic--claude-3-haiku-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "anthropic--claude-3-haiku",
+        "version": "1"
+      },
+      "createdAt": "2025-01-28T12:41:10Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d880d6777be68735",
+      "configurationName": "amazon--titan-text-lite-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "amazon--titan-text-lite",
+        "version": "1"
+      },
+      "createdAt": "2025-01-28T12:41:09Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d8a5c0ddd71a9197",
+      "configurationName": "anthropic--claude-3-sonnet-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "anthropic--claude-3-sonnet",
+        "version": "1"
+      },
+      "createdAt": "2025-01-28T12:41:09Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d970744a62004d5c",
+      "configurationName": "anthropic--claude-3-opus-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "anthropic--claude-3-opus",
+        "version": "1"
+      },
+      "createdAt": "2025-01-28T12:41:09Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d1de49702e1907dc",
+      "configurationName": "anthropic--claude-3.5-sonnet-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "anthropic--claude-3.5-sonnet",
+        "version": "1"
+      },
+      "createdAt": "2025-01-28T12:41:09Z",
+      "modifiedAt": "2025-06-13T10:40:02Z"
+    },
+    {
+      "id": "d9fbbe5b688df576",
+      "configurationName": "textembedding-gecko-multilingual-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "textembedding-gecko-multilingual",
+        "version": "001"
+      },
+      "createdAt": "2025-01-28T12:35:51Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "ddefc52c5743d1d9",
+      "configurationName": "text-bison-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "text-bison",
+        "version": "002"
+      },
+      "createdAt": "2025-01-28T12:35:51Z",
+      "modifiedAt": "2025-06-13T10:40:02Z"
+    },
+    {
+      "id": "df1017c53b7b2283",
+      "configurationName": "gemini-1.5-pro-002-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gemini-1.5-pro",
+        "version": "002"
+      },
+      "createdAt": "2025-01-28T12:35:51Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "daa25a8f78875089",
+      "configurationName": "chat-bison-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "chat-bison",
+        "version": "002"
+      },
+      "createdAt": "2025-01-28T12:35:51Z",
+      "modifiedAt": "2025-06-13T10:47:22Z"
+    },
+    {
+      "id": "d855cb4b7f9bb034",
+      "configurationName": "gemini-1.5-flash-002-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gemini-1.5-flash",
+        "version": "002"
+      },
+      "createdAt": "2025-01-28T12:35:50Z",
+      "modifiedAt": "2025-06-13T10:47:23Z"
+    },
+    {
+      "id": "d4e0dab1891e1e4d",
+      "configurationName": "textembedding-gecko-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "textembedding-gecko",
+        "version": "003"
+      },
+      "createdAt": "2025-01-28T12:35:50Z",
+      "modifiedAt": "2025-06-13T10:47:23Z"
+    },
+    {
+      "id": "d0809b3d16b9fa4d",
+      "configurationName": "gemini-1.5-pro-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gemini-1.5-pro",
+        "version": "001"
+      },
+      "createdAt": "2025-01-28T12:35:50Z",
+      "modifiedAt": "2025-06-13T10:47:22Z"
+    },
+    {
+      "id": "d5ffc86c4d639861",
+      "configurationName": "gemini-1.5-flash-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gemini-1.5-flash",
+        "version": "001"
+      },
+      "createdAt": "2025-01-28T12:35:48Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "dc3defc6926beeda",
+      "configurationName": "gemini-1.0-pro-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gemini-1.0-pro",
+        "version": "001"
+      },
+      "createdAt": "2025-01-28T12:35:48Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d548112b440ebfec",
+      "configurationName": "text-embedding-3-small-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "text-embedding-3-small",
+        "version": "1"
+      },
+      "createdAt": "2025-01-28T12:32:34Z",
+      "modifiedAt": "2025-06-13T10:47:22Z"
+    },
+    {
+      "id": "dd857461c343bdf3",
+      "configurationName": "gpt-4-turbo-2024-04-09-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gpt-4",
+        "version": "turbo-2024-04-09"
+      },
+      "createdAt": "2025-01-28T12:32:34Z",
+      "modifiedAt": "2025-06-13T10:47:22Z"
+    },
+    {
+      "id": "d43878f8e270bc39",
+      "configurationName": "gpt-4-32k-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gpt-4-32k",
+        "version": "0613"
+      },
+      "createdAt": "2025-01-28T12:32:34Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d98a94ea97b41f27",
+      "configurationName": "dall-e-3-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "dall-e-3",
+        "version": "3"
+      },
+      "createdAt": "2025-01-28T12:32:34Z",
+      "modifiedAt": "2025-06-13T10:47:22Z"
+    },
+    {
+      "id": "dd6601fe04b20deb",
+      "configurationName": "text-embedding-3-large-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "text-embedding-3-large",
+        "version": "1"
+      },
+      "createdAt": "2025-01-28T12:32:34Z",
+      "modifiedAt": "2025-06-13T10:47:23Z"
+    },
+    {
+      "id": "d3d286640d7d4f14",
+      "configurationName": "gpt-35-turbo-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gpt-35-turbo",
+        "version": "1106"
+      },
+      "createdAt": "2025-01-28T12:32:33Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d69657d0a1a43d7f",
+      "configurationName": "whisper-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "whisper",
+        "version": "001"
+      },
+      "createdAt": "2025-01-28T12:32:33Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d7c0b27b42fb608f",
+      "configurationName": "text-embedding-ada-002-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "text-embedding-ada-002",
+        "version": "2"
+      },
+      "createdAt": "2025-01-28T12:32:33Z",
+      "modifiedAt": "2025-06-13T10:47:23Z"
+    },
+    {
+      "id": "dcddf4a8e031cb34",
+      "configurationName": "gpt-35-turbo-0125-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gpt-35-turbo-0125",
+        "version": "0125"
+      },
+      "createdAt": "2025-01-28T12:32:32Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d026e3c4ccc6943f",
+      "configurationName": "gpt-4o-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gpt-4o",
+        "version": "2024-05-13"
+      },
+      "createdAt": "2025-01-28T12:32:32Z",
+      "modifiedAt": "2025-06-13T10:40:01Z"
+    },
+    {
+      "id": "d621126cba7b22d3",
+      "configurationName": "gpt-4-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gpt-4",
+        "version": "0613"
+      },
+      "createdAt": "2025-01-28T12:32:32Z",
+      "modifiedAt": "2025-06-13T10:47:17Z"
+    },
+    {
+      "id": "d6f01e37f39870ee",
+      "configurationName": "gpt-4o-2024-08-06-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gpt-4o",
+        "version": "2024-08-06"
+      },
+      "createdAt": "2025-01-28T12:32:31Z",
+      "modifiedAt": "2025-06-13T10:47:22Z"
+    },
+    {
+      "id": "dfe94d6e2f53f990",
+      "configurationName": "gpt-4o-mini-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gpt-4o-mini",
+        "version": "2024-07-18"
+      },
+      "createdAt": "2025-01-28T12:32:31Z",
+      "modifiedAt": "2025-06-13T10:47:22Z"
+    },
+    {
+      "id": "d5d3630ac15c41a7",
+      "configurationName": "gpt-35-turbo-16k-config",
+      "scenarioId": "foundation-models",
+      "status": "RUNNING",
+      "targetStatus": "RUNNING",
+      "model": {
+        "name": "gpt-35-turbo-16k",
+        "version": "0613"
+      },
+      "createdAt": "2025-01-28T12:32:31Z",
+      "modifiedAt": "2025-06-13T10:47:22Z"
+    }
+  ]
+}

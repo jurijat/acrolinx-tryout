@@ -1,0 +1,25 @@
+{
+  "lastUpdated": "2025-06-13T10:40:29.893Z",
+  "workingModels": [
+    "dd2d7fe17a4e7dbc",
+    "dcf2a8b858e44256",
+    "d579defaa4530d94"
+  ],
+  "modelDetails": {
+    "dd2d7fe17a4e7dbc": {
+      "name": "IBM Granite 13B Chat",
+      "provider": "IBM",
+      "description": "IBM's Granite 13B parameter chat model"
+    },
+    "dcf2a8b858e44256": {
+      "name": "Mistral Large Instruct",
+      "provider": "Mistral AI",
+      "description": "Mistral AI's large instruct-tuned model"
+    },
+    "d579defaa4530d94": {
+      "name": "Meta Llama 3.1 70B Instruct",
+      "provider": "Meta",
+      "description": "Meta's Llama 3.1 70B parameter instruct model"
+    }
+  }
+}

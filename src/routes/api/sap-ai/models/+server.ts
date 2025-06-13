@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import type { SapAiModel } from '$lib/types/sap-ai';
-import { SAP_AI_CORE_RESOURCE_GROUP, AICORE_SERVICE_KEY } from '$env/static/private';
+import { AICORE_RESOURCE_GROUP, AICORE_SERVICE_KEY } from '$env/static/private';
 
 interface ServiceKey {
 	serviceurls: {
@@ -32,7 +32,7 @@ export const GET: RequestHandler = async ({ request }) => {
 		const response = await fetch(deploymentsUrl, {
 			headers: {
 				Authorization: authHeader,
-				'AI-Resource-Group': SAP_AI_CORE_RESOURCE_GROUP || 'default',
+				'AI-Resource-Group': AICORE_RESOURCE_GROUP || 'default',
 				'Content-Type': 'application/json'
 			}
 		});

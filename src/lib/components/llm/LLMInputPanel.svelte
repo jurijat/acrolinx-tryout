@@ -7,9 +7,10 @@
 
 	interface Props {
 		models: OpenRouterModel[];
+		onRequestResponse?: (detail: { request: any; response: any; model: string; duration: number }) => void;
 	}
 
-	let { models }: Props = $props();
+	let { models, onRequestResponse }: Props = $props();
 
 	let content = $state('');
 	let fileName = $state<string | undefined>();
@@ -17,6 +18,91 @@
 	let modelSearch = $state('');
 	let showModelDropdown = $state(false);
 	let dropdownRef = $state<HTMLDivElement>();
+	let showSystemPrompt = $state(false);
+	
+	// Default system prompt from the service
+	const DEFAULT_SYSTEM_PROMPT = `You are an advanced text quality analyzer that checks content for clarity, consistency, inclusive language, scannability, spelling/grammar, and terminology issues.
+
+You must analyze the text and return a JSON response with the following structure:
+{
+  "issues": [
+    {
+      "goal": "<goal-id>", // Must be one of: clarity, consistency, inclusive-language, scannability, spelling-grammar, terminology
+      "description": "<clear description of the issue>",
+      "suggestions": ["<suggestion 1>", "<suggestion 2>", ...],
+      "severity": "<severity>", // Must be one of: error, warning, info
+      "originalText": "<the problematic text>",
+      "startOffset": <character position where issue starts>,
+      "endOffset": <character position where issue ends>
+    }
+  ],
+  "overallScore": <0-100>,
+  "goalScores": {
+    "clarity": <0-100>,
+    "consistency": <0-100>,
+    "inclusive-language": <0-100>,
+    "scannability": <0-100>,
+    "spelling-grammar": <0-100>,
+    "terminology": <0-100>
+  },
+  "counts": {
+    "sentences": <number>,
+    "words": <number>,
+    "issues": <number>
+  }
+}
+
+Check for the following:
+
+**Clarity Issues:**
+- Ambiguous pronouns
+- Complex sentences that could be simplified
+- Jargon without explanation
+- Passive voice when active would be clearer
+- Unclear antecedents
+- Vague language
+
+**Consistency Issues:**
+- Inconsistent terminology
+- Inconsistent formatting (e.g., bullet points, capitalization)
+- Inconsistent tone or style
+- Inconsistent spelling variants
+
+**Inclusive Language Issues:**
+- Gendered language when neutral alternatives exist
+- Culturally insensitive terms
+- Ableist language
+- Age-biased language
+- Exclusionary language
+
+**Scannability Issues:**
+- Long paragraphs that should be broken up
+- Missing headings or subheadings
+- Lack of bullet points or lists where appropriate
+- Dense text blocks
+- Missing white space
+
+**Spelling and Grammar Issues:**
+- Spelling errors
+- Grammar mistakes
+- Punctuation errors
+- Subject-verb disagreement
+- Incorrect word usage
+
+**Terminology Issues:**
+- Technical terms not defined
+- Inconsistent use of technical terms
+- Incorrect technical terminology
+- Domain-specific term misuse
+
+Important: 
+- Be thorough but reasonable - don't nitpick minor stylistic choices
+- Provide helpful, actionable suggestions
+- Use appropriate severity levels (error for serious issues, warning for moderate issues, info for suggestions)
+- Calculate realistic scores (perfect text = 100, typical good text = 80-90, problematic text = below 70)
+- Ensure character offsets are accurate for the original text`;
+	
+	let systemPrompt = $state(DEFAULT_SYSTEM_PROMPT);
 
 	// Fixed configuration
 	const GUIDANCE_PROFILE = {
@@ -58,7 +144,7 @@
 		};
 
 		// Use check service which will handle LLM checking
-		await checkService.submitCheck(content, config, selectedModel, 'llm');
+		await checkService.submitCheck(content, config, selectedModel, 'llm', systemPrompt);
 	}
 
 	function formatModelPrice(model: OpenRouterModel) {
@@ -187,6 +273,40 @@
 				</p>
 			</div>
 		{/if}
+
+		<!-- System Prompt Section -->
+		<div>
+			<div class="flex items-center justify-between mb-2">
+				<label class="text-sm font-medium text-gray-700">System Prompt</label>
+				<button
+					type="button"
+					onclick={() => (showSystemPrompt = !showSystemPrompt)}
+					class="text-sm text-blue-600 hover:text-blue-700"
+				>
+					{showSystemPrompt ? 'Hide' : 'Show'} Prompt
+				</button>
+			</div>
+			
+			{#if showSystemPrompt}
+				<div class="space-y-2">
+					<textarea
+						bind:value={systemPrompt}
+						rows={10}
+						class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm font-mono focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+						placeholder="Enter system prompt..."
+					></textarea>
+					<div class="flex justify-end">
+						<button
+							type="button"
+							onclick={() => (systemPrompt = DEFAULT_SYSTEM_PROMPT)}
+							class="text-sm text-gray-600 hover:text-gray-700"
+						>
+							Reset to Default
+						</button>
+					</div>
+				</div>
+			{/if}
+		</div>
 	</div>
 
 	<div class="mt-6 border-t pt-6">
