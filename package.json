@@ -34,6 +34,7 @@
 		"rimraf": "6.0.1",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
+		"svelte-kit": "^1.2.0",
 		"tailwindcss": "^4.1.8",
 		"typescript": "^5.0.0",
 		"typescript-eslint": "^8.20.0",
