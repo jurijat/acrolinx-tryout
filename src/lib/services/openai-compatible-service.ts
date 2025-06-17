@@ -122,7 +122,7 @@ class SAPAICoreProvider implements LLMProvider {
 
 	getChatCompletionUrl(model: string): string {
 		const apiUrl = this.serviceKey.serviceurls.AI_API_URL;
-		return `${apiUrl}/v2/inference/deployments/${model}/chat/completions`;
+		return `${apiUrl}/v2/inference/deployments/${model}/chat/completions?api-version=2024-12-01-preview`;
 	}
 
 	transformRequest(request: ChatCompletionRequest): any {
@@ -169,7 +169,7 @@ class OpenAIProvider implements LLMProvider {
 	}
 
 	getChatCompletionUrl(model: string): string {
-		return `${this.baseUrl}/v1/chat/completions`;
+		return `${this.baseUrl}/v1/chat/completions?api-version=2024-12-01-preview`;
 	}
 
 	transformRequest(request: ChatCompletionRequest): any {

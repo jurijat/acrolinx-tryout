@@ -83,23 +83,21 @@ You must analyze the text and return a JSON response with the following structur
 {
   "issues": [
     {
-      "goal": "<goal-id>", // Must be one of: clarity, consistency, inclusive-language, scannability, spelling-grammar, terminology
+      "goal": "<goal-id>", // Must be one of: CLARITY, CONSISTENCY, INCLUSIVE-LANGUAGE, SCANNABILITY, SPELLING-GRAMMAR, TERMINOLOGY
       "description": "<clear description of the issue>",
       "suggestions": ["<suggestion 1>", "<suggestion 2>", ...],
       "severity": "<severity>", // Must be one of: error, warning, info
       "originalText": "<the problematic text>",
-      "startOffset": <character position where issue starts>,
-      "endOffset": <character position where issue ends>
     }
   ],
   "overallScore": <0-100>,
   "goalScores": {
-    "clarity": <0-100>,
-    "consistency": <0-100>,
-    "inclusive-language": <0-100>,
-    "scannability": <0-100>,
-    "spelling-grammar": <0-100>,
-    "terminology": <0-100>
+    "CLARITY": <0-100>,
+    "CONSISTENCY": <0-100>,
+    "INCLUSIVE-LANGUAGE": <0-100>,
+    "SCANNABILITY": <0-100>,
+    "SPELLING-GRAMMAR": <0-100>,
+    "TERMINOLOGY": <0-100>
   },
   "counts": {
     "sentences": <number>,
